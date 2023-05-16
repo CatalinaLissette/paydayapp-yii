@@ -2,103 +2,143 @@
 
 namespace app\models;
 
-class User extends \yii\base\BaseObject implements \yii\web\IdentityInterface
+use Yii;
+
+/**
+ * This is the model class for table "user".
+ *
+ * @property int $id
+ * @property int|null $commerce_id
+ * @property int|null $provider_id
+ * @property int $commune_id
+ * @property string $email
+ * @property string $hash
+ * @property string|null $hashedRt
+ * @property int $state
+ * @property string $createdAt
+ * @property string $updatedAt
+ * @property string $rut
+ * @property string $name
+ * @property string $businessName
+ * @property string $address
+ * @property string $supervisor
+ * @property string $phone
+ *
+ * @property Commerce $commerce
+ * @property CommerceHasPlan[] $commerceHasPlans
+ * @property Commune $commune
+ * @property Pago[] $pagos
+ * @property Plan[] $plans
+ * @property Provider $provider
+ */
+class User extends \yii\db\ActiveRecord
 {
-    public $id;
-    public $username;
-    public $password;
-    public $authKey;
-    public $accessToken;
-
-    private static $users = [
-        '100' => [
-            'id' => '100',
-            'username' => 'admin',
-            'password' => 'admin',
-            'authKey' => 'test100key',
-            'accessToken' => '100-token',
-        ],
-        '101' => [
-            'id' => '101',
-            'username' => 'demo',
-            'password' => 'demo',
-            'authKey' => 'test101key',
-            'accessToken' => '101-token',
-        ],
-    ];
-
-
     /**
      * {@inheritdoc}
      */
-    public static function findIdentity($id)
+    public static function tableName()
     {
-        return isset(self::$users[$id]) ? new static(self::$users[$id]) : null;
+        return 'user';
     }
 
     /**
      * {@inheritdoc}
      */
-    public static function findIdentityByAccessToken($token, $type = null)
+    public function rules()
     {
-        foreach (self::$users as $user) {
-            if ($user['accessToken'] === $token) {
-                return new static($user);
-            }
-        }
-
-        return null;
+        return [
+            [['commerce_id', 'provider_id', 'commune_id', 'state'], 'integer'],
+            [['commune_id', 'email', 'hash', 'state', 'createdAt', 'updatedAt', 'rut', 'name', 'businessName', 'address', 'supervisor', 'phone'], 'required'],
+            [['createdAt', 'updatedAt'], 'safe'],
+            [['email', 'hash', 'hashedRt', 'rut', 'name', 'businessName', 'address', 'supervisor', 'phone'], 'string', 'max' => 45],
+            [['commerce_id'], 'exist', 'skipOnError' => true, 'targetClass' => Commerce::class, 'targetAttribute' => ['commerce_id' => 'id']],
+            [['commune_id'], 'exist', 'skipOnError' => true, 'targetClass' => Commune::class, 'targetAttribute' => ['commune_id' => 'id']],
+            [['provider_id'], 'exist', 'skipOnError' => true, 'targetClass' => Provider::class, 'targetAttribute' => ['provider_id' => 'id']],
+        ];
     }
 
     /**
-     * Finds user by username
+     * {@inheritdoc}
+     */
+    public function attributeLabels()
+    {
+        return [
+            'id' => 'ID',
+            'commerce_id' => 'Commerce ID',
+            'provider_id' => 'Provider ID',
+            'commune_id' => 'Commune ID',
+            'email' => 'Email',
+            'hash' => 'Hash',
+            'hashedRt' => 'Hashed Rt',
+            'state' => 'State',
+            'createdAt' => 'Created At',
+            'updatedAt' => 'Updated At',
+            'rut' => 'Rut',
+            'name' => 'Name',
+            'businessName' => 'Business Name',
+            'address' => 'Address',
+            'supervisor' => 'Supervisor',
+            'phone' => 'Phone',
+        ];
+    }
+
+    /**
+     * Gets query for [[Commerce]].
      *
-     * @param string $username
-     * @return static|null
+     * @return \yii\db\ActiveQuery
      */
-    public static function findByUsername($username)
+    public function getCommerce()
     {
-        foreach (self::$users as $user) {
-            if (strcasecmp($user['username'], $username) === 0) {
-                return new static($user);
-            }
-        }
-
-        return null;
+        return $this->hasOne(Commerce::class, ['id' => 'commerce_id']);
     }
 
     /**
-     * {@inheritdoc}
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getAuthKey()
-    {
-        return $this->authKey;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function validateAuthKey($authKey)
-    {
-        return $this->authKey === $authKey;
-    }
-
-    /**
-     * Validates password
+     * Gets query for [[CommerceHasPlans]].
      *
-     * @param string $password password to validate
-     * @return bool if password provided is valid for current user
+     * @return \yii\db\ActiveQuery
      */
-    public function validatePassword($password)
+    public function getCommerceHasPlans()
     {
-        return $this->password === $password;
+        return $this->hasMany(CommerceHasPlan::class, ['user_id' => 'id']);
+    }
+
+    /**
+     * Gets query for [[Commune]].
+     *
+     * @return \yii\db\ActiveQuery
+     */
+    public function getCommune()
+    {
+        return $this->hasOne(Commune::class, ['id' => 'commune_id']);
+    }
+
+    /**
+     * Gets query for [[Pagos]].
+     *
+     * @return \yii\db\ActiveQuery
+     */
+    public function getPagos()
+    {
+        return $this->hasMany(Pago::class, ['user_id' => 'id']);
+    }
+
+    /**
+     * Gets query for [[Plans]].
+     *
+     * @return \yii\db\ActiveQuery
+     */
+    public function getPlans()
+    {
+        return $this->hasMany(Plan::class, ['id' => 'plan_id'])->viaTable('commerce_has_plan', ['user_id' => 'id']);
+    }
+
+    /**
+     * Gets query for [[Provider]].
+     *
+     * @return \yii\db\ActiveQuery
+     */
+    public function getProvider()
+    {
+        return $this->hasOne(Provider::class, ['id' => 'provider_id']);
     }
 }
