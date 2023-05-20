@@ -3,6 +3,9 @@
 namespace app\models;
 
 use Yii;
+use yii\behaviors\TimestampBehavior;
+use yii\db\Expression;
+use yii\helpers\ArrayHelper;
 
 /**
  * This is the model class for table "provider".
@@ -34,7 +37,7 @@ class Provider extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['createdAt', 'updatedAt', 'state'], 'required'],
+            [['state'], 'required'],
             [['createdAt', 'updatedAt'], 'safe'],
             [['state'], 'integer'],
         ];
@@ -101,5 +104,17 @@ class Provider extends \yii\db\ActiveRecord
     public function getUsers()
     {
         return $this->hasMany(User::class, ['provider_id' => 'id']);
+    }
+
+    public function behaviors()
+    {
+        return ArrayHelper::merge(parent::behaviors(), [
+            [
+                'class' => TimestampBehavior::class,
+                'createdAtAttribute' => 'createdAt',
+                'updatedAtAttribute' => 'updatedAt',
+                'value' => new Expression('NOW()')
+            ]
+        ]);
     }
 }

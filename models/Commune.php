@@ -15,7 +15,7 @@ use Yii;
  * @property string $updatedAt
  *
  * @property Region $region
- * @property User[] $users
+ * @property User[] $user
  */
 class Commune extends \yii\db\ActiveRecord
 {
