@@ -55,4 +55,19 @@ class UserService
             throw new \Exception(Json::encode($user->errors));
         }
     }
+
+    public function findById(int $id): User
+    {
+        return $this->model::findOne($id);
+    }
+
+    public function findByUsername(string $username): ?User
+    {
+        return $this->model::findOne(['email' => $username, 'state' => User::STATUS_ACTIVE]);
+    }
+
+    public function findByUuid(int $user_id): ?User
+    {
+        return $this->model::findOne(['uuid' => $user_id, 'state' => User::STATUS_ACTIVE]);
+    }
 }
