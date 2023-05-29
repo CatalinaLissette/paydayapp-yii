@@ -18,7 +18,7 @@ use yii\helpers\ArrayHelper;
  * @property string $updatedAt
  *
  * @property Region $region
- * @property User[] $users
+ * @property User[] $user
  */
 class Commune extends \yii\db\ActiveRecord
 {

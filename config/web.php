@@ -1,5 +1,8 @@
 <?php
 
+use sizeg\jwt\Jwt;
+use sizeg\jwt\JwtValidationData;
+
 $params = require __DIR__ . '/params.php';
 $db = require __DIR__ . '/db.php';
 
@@ -18,8 +21,12 @@ $config = [
         ],
     ],
     'components' => [
+        'jwt' => [
+            'class' => Jwt::class,
+            'key' => 'lqNCkvEXt__5jLmIkUk6AUnRLj4K_qk8',
+            'jwtValidationData' => JwtValidationData::class
+        ],
         'request' => [
-            'baseUrl' => '/api',
             'parsers' => [
                 'application/json' => 'yii\web\JsonParser'
             ],
@@ -31,7 +38,7 @@ $config = [
         ],
         'user' => [
             'identityClass' => 'app\models\User',
-            'enableAutoLogin' => true,
+            'enableAutoLogin' => false,
         ],
         'errorHandler' => [
             'errorAction' => 'site/error',
@@ -59,7 +66,7 @@ $config = [
                 [
                     'class' => 'yii\rest\UrlRule',
                     'controller' => [
-                        'v1/user',
+                        'v1/user', 'v1/auth'
                     ],
                 ],
                 'v1/regions/<region_id:\d+>/commune/create' => 'v1/commune/create',
@@ -79,7 +86,7 @@ if (YII_ENV_DEV) {
     $config['modules']['debug'] = [
         'class' => 'yii\debug\Module',
         // uncomment the following to add your IP if you are not connecting from localhost.
-        //'allowedIPs' => ['127.0.0.1', '::1'],
+        'allowedIPs' => ['127.0.0.1', '::1', '*'],
     ];
 
     $config['bootstrap'][] = 'gii';
