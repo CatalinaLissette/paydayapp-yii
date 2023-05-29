@@ -3,6 +3,9 @@
 namespace app\models;
 
 use Yii;
+use yii\behaviors\TimestampBehavior;
+use yii\db\Expression;
+use yii\helpers\ArrayHelper;
 
 /**
  * This is the model class for table "commune".
@@ -27,13 +30,25 @@ class Commune extends \yii\db\ActiveRecord
         return 'commune';
     }
 
+    public function behaviors()
+    {
+        return ArrayHelper::merge([
+            [
+                'class' => TimestampBehavior::class,
+                'createdAtAttribute' => 'createdAt',
+                'updatedAtAttribute' => 'updatedAt',
+                'value' => new Expression('NOW()')
+            ]
+        ], parent::behaviors());
+    }
+
     /**
      * {@inheritdoc}
      */
     public function rules()
     {
         return [
-            [['region_id', 'name', 'state', 'createdAt', 'updatedAt'], 'required'],
+            [['region_id', 'name', 'state'], 'required'],
             [['region_id', 'state'], 'integer'],
             [['createdAt', 'updatedAt'], 'safe'],
             [['name'], 'string', 'max' => 45],

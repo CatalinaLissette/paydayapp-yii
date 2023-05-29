@@ -3,6 +3,9 @@
 namespace app\models;
 
 use Yii;
+use yii\behaviors\TimestampBehavior;
+use yii\db\Expression;
+use yii\helpers\ArrayHelper;
 
 /**
  * This is the model class for table "quotes".
@@ -35,13 +38,26 @@ class Quote extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['order_id', 'createdAt', 'updatedAt', 'state', 'quoteNumber', 'payDate', 'quoteAmount'], 'required'],
+            [['order_id', 'state', 'quoteNumber', 'payDate', 'quoteAmount'], 'required'],
             [['order_id', 'state', 'quoteNumber', 'quoteAmount'], 'integer'],
             [['createdAt', 'updatedAt', 'payDate'], 'safe'],
             [['paymentId'], 'string', 'max' => 45],
             [['order_id'], 'exist', 'skipOnError' => true, 'targetClass' => Order::class, 'targetAttribute' => ['order_id' => 'id']],
         ];
     }
+
+    public function behaviors()
+    {
+        return ArrayHelper::merge([
+            [
+                'class' => TimestampBehavior::class,
+                'createdAtAttribute' => 'createdAt',
+                'updatedAtAttribute' => 'updatedAt',
+                'value' => new Expression('NOW()')
+            ]
+        ], parent::behaviors());
+    }
+
 
     /**
      * {@inheritdoc}

@@ -3,6 +3,9 @@
 namespace app\models;
 
 use Yii;
+use yii\behaviors\TimestampBehavior;
+use yii\db\Expression;
+use yii\helpers\ArrayHelper;
 
 /**
  * This is the model class for table "region".
@@ -25,13 +28,25 @@ class Region extends \yii\db\ActiveRecord
         return 'region';
     }
 
+    public function behaviors()
+    {
+        return ArrayHelper::merge([
+            [
+                'class' => TimestampBehavior::class,
+                'createdAtAttribute' => 'createdAt',
+                'updatedAtAttribute' => 'updatedAt',
+                'value' => new Expression('NOW()')
+            ]
+        ], parent::behaviors());
+    }
+
     /**
      * {@inheritdoc}
      */
     public function rules()
     {
         return [
-            [['name', 'state', 'createdAt', 'updatedAt'], 'required'],
+            [['name', 'state'], 'required'],
             [['state'], 'integer'],
             [['createdAt', 'updatedAt'], 'safe'],
             [['name'], 'string', 'max' => 45],

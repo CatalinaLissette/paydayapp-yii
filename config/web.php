@@ -56,7 +56,16 @@ $config = [
             'enablePrettyUrl' => true,
             'showScriptName' => false,
             'rules' => [
-                ['class' => 'yii\rest\UrlRule', 'controller' => ['v1/user']]
+                [
+                    'class' => 'yii\rest\UrlRule',
+                    'controller' => [
+                        'v1/user',
+                    ],
+                ],
+                'v1/regions/<region_id:\d+>/commune/create' => 'v1/commune/create',
+                'v1/sales/create' => 'v1/order/create',
+                'v1/sales/search' => 'v1/order',
+                'v1/sales/search/<order_id:\d+>' => 'v1/order/view',
             ],
         ],
 

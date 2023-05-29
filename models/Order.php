@@ -3,6 +3,9 @@
 namespace app\models;
 
 use Yii;
+use yii\behaviors\TimestampBehavior;
+use yii\db\Expression;
+use yii\helpers\ArrayHelper;
 
 /**
  * This is the model class for table "order".
@@ -36,7 +39,7 @@ class Order extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['provider_id', 'commerce_id', 'createdAt', 'updatedAt', 'state', 'totalAmount'], 'required'],
+            [['provider_id', 'commerce_id', 'state', 'totalAmount'], 'required'],
             [['provider_id', 'commerce_id', 'state', 'totalAmount'], 'integer'],
             [['createdAt', 'updatedAt'], 'safe'],
             [['observation'], 'string', 'max' => 45],
@@ -44,6 +47,19 @@ class Order extends \yii\db\ActiveRecord
             [['provider_id'], 'exist', 'skipOnError' => true, 'targetClass' => Provider::class, 'targetAttribute' => ['provider_id' => 'id']],
         ];
     }
+
+    public function behaviors()
+    {
+        return ArrayHelper::merge([
+            [
+                'class' => TimestampBehavior::class,
+                'createdAtAttribute' => 'createdAt',
+                'updatedAtAttribute' => 'updatedAt',
+                'value' => new Expression('NOW()')
+            ]
+        ], parent::behaviors());
+    }
+
 
     /**
      * {@inheritdoc}
@@ -90,5 +106,12 @@ class Order extends \yii\db\ActiveRecord
     public function getQuotes()
     {
         return $this->hasMany(Quote::class, ['order_id' => 'id']);
+    }
+
+    public function extraFields()
+    {
+        return [
+            'quotes' // Nombre de la relación que deseas incluir como extraField
+        ];
     }
 }
