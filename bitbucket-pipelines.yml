@@ -8,10 +8,8 @@ pipelines:
           name: Build payggo image
           image: docker:latest
           services:
-            - name: docker:dind
-              alias: dockerhost
+            - docker
           script:
-            - export DOCKER_HOST=""
             - docker build -t payggo .
             - echo "$DOCKER_PASSWORD" | docker login --username "$DOCKER_USERNAME" --password-stdin
             - docker tag payggo "$DOCKER_USERNAME/payggo-backend:$BITBUCKET_TAG"
