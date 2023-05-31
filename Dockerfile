@@ -10,6 +10,7 @@ RUN apt-get update && apt-get install -y \
     libjpeg-dev \
     libonig-dev \
     libxml2-dev \
+    libcurl4-gnutls-dev \
     zip \
     unzip \
     && rm -rf /var/lib/apt/lists/*
