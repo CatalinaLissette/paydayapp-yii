@@ -9,6 +9,7 @@ RUN apt-get update && apt-get install -y \
     libpng-dev \
     libjpeg-dev \
     libonig-dev \
+    libxml2-dev \
     zip \
     unzip \
     && rm -rf /var/lib/apt/lists/*
