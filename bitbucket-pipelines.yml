@@ -2,6 +2,9 @@ pipelines:
   tags:
     '*':
       - step:
+          runs-on:
+            - self.hosted
+            - linux
           name: Build payggo image
           image: docker:lastest
           script:
