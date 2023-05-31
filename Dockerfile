@@ -16,7 +16,7 @@ RUN apt-get update && apt-get install -y \
 
 RUN docker-php-ext-install mbstring xml
 
-COPY docker/nginx/default.conf /etc/nginx/conf.d/default.conf
+COPY default.conf /etc/nginx/conf.d/default.conf
 
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
