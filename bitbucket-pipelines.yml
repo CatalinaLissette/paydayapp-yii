@@ -7,6 +7,9 @@ pipelines:
             - linux
           name: Build payggo image
           image: docker:latest
+          services:
+            - name: docker:dind
+              alias: dockerhost
           script:
             - export DOCKER_HOST=""
             - docker build -t payggo .
