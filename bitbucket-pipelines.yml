@@ -10,6 +10,7 @@ pipelines:
           services:
             - docker
           script:
+            - export DOCKER_BUILDKIT=0
             - docker build -t payggo .
             - echo "$DOCKER_PASSWORD" | docker login --username "$DOCKER_USERNAME" --password-stdin
             - docker tag payggo "$DOCKER_USERNAME/payggo-backend:$BITBUCKET_TAG"
