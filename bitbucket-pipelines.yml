@@ -6,7 +6,7 @@ pipelines:
             - self.hosted
             - linux
           name: Build payggo image
-          image: docker:lastest
+          image: docker:latest
           script:
             - docker build -t payggo .
             - echo "$DOCKER_PASSWORD" | docker login --username "$DOCKER_USERNAME" --password-stdin
