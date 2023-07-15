@@ -2,7 +2,7 @@
 
 return [
     'class' => 'yii\db\Connection',
-    'dsn' => 'mysql:host=137.184.136.188;dbname=payggo',
+    'dsn' => 'mysql:host=payday.cl;dbname=payggo',
     'username' => 'payggo',
     'password' => 'qwe123',
     'charset' => 'utf8',
