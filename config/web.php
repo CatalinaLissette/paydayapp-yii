@@ -73,6 +73,9 @@ $config = [
                 'v1/sales/create' => 'v1/order/create',
                 'v1/sales/search' => 'v1/order',
                 'v1/sales/search/<order_id:\d+>' => 'v1/order/view',
+                'v1/quotes/khipu/create-payment' => 'v1/quote/create-payment',
+                'v1/quotes/khipu/create-account' => 'v1/khipu_account/create',
+                'v1/region/create' => 'v1/region/create'
             ],
         ],
 
