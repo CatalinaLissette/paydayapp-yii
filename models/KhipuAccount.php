@@ -3,6 +3,9 @@
 namespace app\models;
 
 use Yii;
+use yii\behaviors\TimestampBehavior;
+use yii\db\Expression;
+use yii\helpers\ArrayHelper;
 
 /**
  * This is the model class for table "khipu_account".
@@ -22,7 +25,17 @@ class KhipuAccount extends \yii\db\ActiveRecord
     {
         return 'khipu_account';
     }
-
+    public function behaviors()
+    {
+        return ArrayHelper::merge([
+            [
+                'class' => TimestampBehavior::class,
+                'createdAtAttribute' => 'createdAt',
+                'updatedAtAttribute' => 'updatedAt',
+                'value' => new Expression('NOW()')
+            ]
+        ], parent::behaviors());
+    }
     /**
      * {@inheritdoc}
      */
@@ -47,6 +60,8 @@ class KhipuAccount extends \yii\db\ActiveRecord
             'key' => 'Key',
             'provider_id' => 'Provider ID',
             'id' => 'ID',
+            'createdAt' => 'Created At',
+            'updatedAt' => 'Updated At',
         ];
     }
 
