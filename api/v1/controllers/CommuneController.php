@@ -39,6 +39,11 @@ class CommuneController extends ActiveController
 
         return $model->getErrors();
 
+    }
+
+    public function actionSearchByRegionId($region_id){
+        $model = new $this->modelClass;
+        return $model::find()->where(['region_id' => $region_id])->all();
 
     }
 }
