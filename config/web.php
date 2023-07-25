@@ -69,16 +69,17 @@ $config = [
                         'v1/user', 'v1/auth'
                     ],
                 ],
-                'v1/regions/<region_id:\d+>/commune/create' => 'v1/commune/create',
-                'v1/regions/<region_id:\d+>/commune/search' => 'v1/commune/search-by-region-id',
-                'v1/sales/create' => 'v1/order/create',
-                'v1/sales/search' => 'v1/order',
-                'v1/sales/search/<order_id:\d+>' => 'v1/order/view',
+                'POST v1/regions/<region_id:\d+>/commune' => 'v1/commune/create',
+                'v1/regions/<region_id:\d+>/commune' => 'v1/commune/search-by-region-id',
+                'POST v1/sales' => 'v1/order/create',
+                'v1/sales' => 'v1/order',
+                'v1/sales/<order_id:\d+>' => 'v1/order/view',
                 'v1/quotes/khipu/create-payment' => 'v1/quote/create-payment',
-                'v1/khipu-account/search' => 'v1/khipu-account',
-                'v1/khipu-account/<provider_id:\d+>/search' => 'v1/khipu-account/search-by-provider-id',
-                'v1/khipu-account/create' => 'v1/khipu-account/create',
-                'v1/region/create' => 'v1/region/create'
+                'POST v1/quotes/khipu/notification' => 'v1/quote/notification',
+                'v1/khipu-account' => 'v1/khipu-account',
+                'v1/khipu-account/<provider_id:\d+>' => 'v1/khipu-account/search-by-provider-id',
+                'POST v1/khipu-account' => 'v1/khipu-account/create',
+                'POST v1/region' => 'v1/region/create'
             ],
         ],
 

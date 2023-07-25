@@ -13,6 +13,7 @@ use yii\helpers\ArrayHelper;
  * @property string $key
  * @property int $provider_id
  * @property int $id
+ * @property int $receiver_id
  *
  * @property Provider $provider
  */
@@ -43,10 +44,11 @@ class KhipuAccount extends \yii\db\ActiveRecord
     {
         return [
             [['key', 'provider_id'], 'required'],
-            [['provider_id'], 'integer'],
+            [['provider_id','receiver_id'], 'integer'],
             [['key'], 'string', 'max' => 100],
             [['provider_id'], 'unique'],
             [['key'], 'unique'],
+            [['receiver_id'], 'unique'],
             [['provider_id'], 'exist', 'skipOnError' => true, 'targetClass' => Provider::class, 'targetAttribute' => ['provider_id' => 'id']],
         ];
     }
@@ -59,6 +61,7 @@ class KhipuAccount extends \yii\db\ActiveRecord
         return [
             'key' => 'Key',
             'provider_id' => 'Provider ID',
+            'receiver_id' => 'Receiver ID',
             'id' => 'ID',
             'createdAt' => 'Created At',
             'updatedAt' => 'Updated At',

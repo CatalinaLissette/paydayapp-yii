@@ -8,7 +8,7 @@ use app\models\Quote;
 use app\services\QuotesService;
 use yii\rest\ActiveController;
 
-class QuoteController extends ActiveController
+class QuoteController extends SafeController
 {
     public $modelClass = Quote::class;
 
@@ -28,9 +28,24 @@ class QuoteController extends ActiveController
     public function actionCreatePayment()
     {
         $post = $this->request->post();
-        return $this->quotesService->createPayment($post['amount'],$post['email'],$post['orderId'], $post['orderDetail']);
+        return $this->quotesService->createPayment(
+            $post['amount'],
+            $post['email'],
+            $post['orderId'],
+            $post['orderDetail'],
+            $post['providerId'],
+            $post['subject'],
+        );
 
+    }
 
+    public function actionNotification(){
+        $post = $this->request->post();
+        $email = $this->quotesService->verifyPaymentQuotes($post['notification_token'],$post['api_version']);
+
+        //TODO:ENVIAR EMAIL
+
+        return $email;
     }
 
 }

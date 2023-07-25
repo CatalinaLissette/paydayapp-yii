@@ -3,6 +3,7 @@
 
 namespace app\services;
 
+use app\models\KhipuAccount;
 use Khipu\Configuration;
 use Khipu\ApiClient;
 use Khipu\Client\PaymentsApi;
@@ -10,20 +11,38 @@ use Khipu\Client\PaymentsApi;
 
 class KhipuService
 {
-    private $receiverId;
-    private $secretKey;
+    /**
+     * @var KhipuAccount
+     */
+    private KhipuAccount $model;
 
-    public function __construct($receiverId, $secretKey)
+    public function __construct(
+        KhipuAccount $model
+    )
     {
-        $this->receiverId = $receiverId;
-        $this->secretKey = $secretKey;
+        $this->model = $model;
     }
 
-    public function createPayment()
+    public function getKeysForKhipu(int $providerId){
+        return $this->model::findOne(['provider_id' => $providerId]);
+    }
+
+
+
+    public function createPayment(
+        int $amount,
+        string $email,
+        int $providerId,
+        string $subject,
+        string $notifyUrl,
+        int $transactionId
+    )
     {
+
+        $data = $this->getKeysForKhipu($providerId);
         $configuration = new Configuration();
-        $configuration->setReceiverId($this->receiverId);
-        $configuration->setSecret($this->secretKey);
+        $configuration->setReceiverId($data['receiver_id']);
+        $configuration->setSecret($data['key']);
         // $configuration->setDebug(true);
 
         $client = new ApiClient($configuration);
@@ -31,25 +50,44 @@ class KhipuService
 
       //  try {
             $opts = array(
-                "transaction_id" => "MTI-100",
-                "return_url" => "http://mi-ecomerce.com/backend/return",
-                "cancel_url" => "http://mi-ecomerce.com/backend/cancel",
-                "picture_url" => "http://mi-ecomerce.com/pictures/foto-producto.jpg",
-                "notify_url" => "http://mi-ecomerce.com/backend/notify",
-                "notify_api_version" => "1.3"
+                "payer_email" => $email,
+                "notify_url" => $notifyUrl,
+                "notify_api_version" => "1.3",
+                "transaction_id" => $transactionId
+              //  "return_url" => "http://mi-ecomerce.com/backend/return",
+              //  "cancel_url" => "http://mi-ecomerce.com/backend/cancel",
+              //  "picture_url" => "http://mi-ecomerce.com/pictures/foto-producto.jpg",
+
             );
             $response = $payments->paymentsPost(
-                "Compra de prueba de la API", // Motivo de la compra
+                $subject, // Motivo de la compra
                 "CLP", // Monedas disponibles CLP, USD, ARS, BOB
-                100.0, // Monto. Puede contener ","
-                $opts // Campos opcionales
+                $amount,
+                $opts
             );
 
-            return $response;
+            return [
+                'payment_id' => $response['payment_id'],
+                'payment_url' => $response['payment_url'],
+                'simplified_transfer_url' => $response['simplified_transfer_url'],
+                'transfer_url' => $response['transfer_url'],
+                'app_url' => $response['app_url'],
+            ];
 //        } catch (\Khipu\ApiException $e) {
 //            return $e->getResponseBody();
 //        }
     //    return '';
+    }
+
+    public function getPayments(string $notificationToken)
+    {
+
+    }
+
+    public function getReceiverById(int $receiverId)
+    {
+        return $this->model::findOne(['receiver_id' =>$receiverId]);
+
     }
 
 }

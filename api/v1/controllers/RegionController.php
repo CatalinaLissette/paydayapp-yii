@@ -7,7 +7,7 @@ namespace app\api\v1\controllers;
 use app\models\Region;
 use yii\rest\ActiveController;
 
-class RegionController extends ActiveController
+class RegionController extends SafeController
 {
     public $modelClass = Region::class;
 
