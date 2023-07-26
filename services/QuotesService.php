@@ -54,10 +54,10 @@ class QuotesService
         try {
             $result = $this->kiphuService->getKeysForKhipu($providerId);
 
-            $notifyUrl = "https://payday.cl/v1/quotes/khipu/notification/${$result['reference_id']}";
+            $notifyUrl = "https://payday.cl/v1/quotes/khipu/notification/{$result->reference_id}";
 
 
-            $result = $this->kiphuService->createPayment($amount, $email, $providerId, $subject,$notifyUrl,$orderId,$result);
+            $result = $this->kiphuService->createPayment($amount, $email, $subject,$notifyUrl,$orderId, $result);
             //VALIDAR QUE PAYMENT_ID VENGA
             $paymentId = $result['payment_id'];
 

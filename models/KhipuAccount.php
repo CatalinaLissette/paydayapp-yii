@@ -14,6 +14,7 @@ use yii\helpers\ArrayHelper;
  * @property int $provider_id
  * @property int $id
  * @property int $receiver_id
+ * @property string $reference_id
  *
  * @property Provider $provider
  */
@@ -43,12 +44,14 @@ class KhipuAccount extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['key', 'provider_id'], 'required'],
+            [['key', 'provider_id','reference_id'], 'required'],
             [['provider_id','receiver_id'], 'integer'],
             [['key'], 'string', 'max' => 100],
+            [['reference_id'], 'string', 'max' => 36],
             [['provider_id'], 'unique'],
             [['key'], 'unique'],
             [['receiver_id'], 'unique'],
+            [['reference_id'], 'unique'],
             [['provider_id'], 'exist', 'skipOnError' => true, 'targetClass' => Provider::class, 'targetAttribute' => ['provider_id' => 'id']],
         ];
     }
