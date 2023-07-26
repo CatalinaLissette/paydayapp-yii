@@ -4,9 +4,11 @@
 namespace app\services;
 
 use app\models\KhipuAccount;
+use Khipu\ApiException;
 use Khipu\Configuration;
 use Khipu\ApiClient;
 use Khipu\Client\PaymentsApi;
+use yii\db\Exception;
 
 
 class KhipuService
@@ -28,22 +30,19 @@ class KhipuService
     }
 
 
-
     public function createPayment(
         int $amount,
         string $email,
-        int $providerId,
         string $subject,
         string $notifyUrl,
-        int $transactionId
+        int $transactionId,
+        array $khipuAccount
     )
     {
 
-        $data = $this->getKeysForKhipu($providerId);
         $configuration = new Configuration();
-        $configuration->setReceiverId($data['receiver_id']);
-        $configuration->setSecret($data['key']);
-        // $configuration->setDebug(true);
+        $configuration->setReceiverId($khipuAccount['receiver_id']);
+        $configuration->setSecret($khipuAccount['key']);
 
         $client = new ApiClient($configuration);
         $payments = new PaymentsApi($client);
@@ -81,7 +80,16 @@ class KhipuService
 
     public function getPayments(string $notificationToken)
     {
-
+        try {
+            $configuration = new Configuration();
+            $client = new ApiClient($configuration);
+            $configuration->setReceiverId('438585');
+            $configuration->setSecret('cb8e81a44fa427844c4838d95a6832a0763e3df5');
+            $payments = new PaymentsApi($client);
+            $pagos = $payments->paymentsGet($notificationToken);
+        } catch (ApiException $e) {
+            throw new \yii\console\Exception($e);
+        }
     }
 
     public function getReceiverById(int $receiverId)

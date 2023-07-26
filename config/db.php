@@ -11,5 +11,5 @@ return [
     //'enableSchemaCache' => true,
     //'schemaCacheDuration' => 60,
     //'schemaCache' => 'cache',
-    //'dsn' => 'mysql:host=db;dbname=payggo',
+   // 'dsn' => 'mysql:host=db;dbname=payggo',
 ];
