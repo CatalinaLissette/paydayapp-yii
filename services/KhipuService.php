@@ -36,13 +36,13 @@ class KhipuService
         string $subject,
         string $notifyUrl,
         int $transactionId,
-        array $khipuAccount
+        KhipuAccount $khipuAccount
     )
     {
 
         $configuration = new Configuration();
-        $configuration->setReceiverId($khipuAccount['receiver_id']);
-        $configuration->setSecret($khipuAccount['key']);
+        $configuration->setReceiverId($khipuAccount->receiver_id);
+        $configuration->setSecret($khipuAccount->key);
 
         $client = new ApiClient($configuration);
         $payments = new PaymentsApi($client);
