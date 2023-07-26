@@ -52,9 +52,12 @@ class QuotesService
         $transaction = Yii::$app->db->beginTransaction();
 
         try {
-           // $notifyUrl = '"https://payday.cl/v1/quotes/khipu/notification"';
-            $notifyUrl = '';
-            $result = $this->kiphuService->createPayment($amount, $email, $providerId, $subject,$notifyUrl,$orderId);
+            $result = $this->kiphuService->getKeysForKhipu($providerId);
+
+            $notifyUrl = "https://payday.cl/v1/quotes/khipu/notification/${$result['reference_id']}";
+
+
+            $result = $this->kiphuService->createPayment($amount, $email, $providerId, $subject,$notifyUrl,$orderId,$result);
             //VALIDAR QUE PAYMENT_ID VENGA
             $paymentId = $result['payment_id'];
 

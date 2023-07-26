@@ -8,7 +8,7 @@ use app\models\Quote;
 use app\services\QuotesService;
 use yii\rest\ActiveController;
 
-class QuoteController extends SafeController
+class QuoteController extends ActiveController
 {
     public $modelClass = Quote::class;
 
@@ -39,13 +39,16 @@ class QuoteController extends SafeController
 
     }
 
-    public function actionNotification(){
+    public function actionNotification(string $reference_id)
+    {
         $post = $this->request->post();
+        \Yii::debug($post);
+
         $email = $this->quotesService->verifyPaymentQuotes($post['notification_token'],$post['api_version']);
 
         //TODO:ENVIAR EMAIL
 
-        return $email;
+        return "ok";
     }
 
 }
