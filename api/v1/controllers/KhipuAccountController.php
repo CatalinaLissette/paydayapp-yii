@@ -7,7 +7,7 @@ namespace app\api\v1\controllers;
 use app\models\KhipuAccount;
 use yii\rest\ActiveController;
 
-class KhipuAccountController extends ActiveController
+class KhipuAccountController extends SafeController
 {
     public $modelClass = KhipuAccount::class;
 

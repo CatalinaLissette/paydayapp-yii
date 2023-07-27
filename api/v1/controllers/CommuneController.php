@@ -5,11 +5,21 @@ namespace app\api\v1\controllers;
 
 
 use app\models\Commune;
+use yii\filters\Cors;
 use yii\rest\ActiveController;
 
 class CommuneController extends ActiveController
 {
     public $modelClass = Commune::class;
+
+    public function behaviors()
+    {
+        $behaviors = parent::behaviors();
+        $behaviors['cors'] = [
+            'class' => Cors::class
+        ];
+        return $behaviors;
+    }
 
     public function actions()
     {
