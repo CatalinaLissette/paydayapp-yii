@@ -6,12 +6,26 @@ namespace app\api\v1\controllers;
 
 use app\models\Order;
 use app\models\Quote;
+use app\services\OrderService;
 use Yii;
 use yii\rest\ActiveController;
 
 class OrderController extends ActiveController
 {
     public $modelClass = Order::class;
+
+    private OrderService $orderService;
+
+    public function __construct(
+        $id,
+        $module,
+        $config = [],
+        OrderService $orderService
+    )
+    {
+        parent::__construct($id, $module, $config);
+        $this->orderService = $orderService;
+    }
 
     public function actions()
     {
@@ -22,36 +36,9 @@ class OrderController extends ActiveController
 
     public function actionCreate()
     {
-
         $requestData = Yii::$app->request->getBodyParams();
-        $order = new Order();
-        $order->load(['Order' => $requestData]);
+        return $this->orderService->create($requestData);
 
-        $transaction = Yii::$app->db->beginTransaction();
-        try {
-            if (!$order->save()) {
-                throw new \Exception('Error al guardar la orden.');
-            }
-
-            foreach ($requestData['quotes'] as $quoteData) {
-                $quote = new Quote();
-                $quote->load(['Quote' => $quoteData]);
-                $quote->order_id = $order->id;
-                $quote->state = 1;
-
-                if (!$quote->save()) {
-                    throw new \Exception('Error al guardar la glosa.');
-                }
-            }
-
-            $transaction->commit();
-
-            return ['status' => 'success', 'message' => 'Datos guardados correctamente.'];
-        } catch (\Exception $e) {
-            $transaction->rollBack();
-
-            return ['status' => 'error', 'message' => $e->getMessage()];
-        }
     }
 
     public function actionView($order_id)

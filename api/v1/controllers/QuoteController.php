@@ -39,7 +39,7 @@ class QuoteController extends ActiveController
 
     }
 
-    public function actionNotification(string $reference_id)
+    public function actionNotification($reference_id)
     {
         $post = $this->request->post();
         \Yii::debug($post);
@@ -48,7 +48,7 @@ class QuoteController extends ActiveController
 
         //TODO:ENVIAR EMAIL
 
-        return "ok";
+        return $reference_id;
     }
 
 }
