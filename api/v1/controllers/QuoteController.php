@@ -8,7 +8,7 @@ use app\models\Quote;
 use app\services\QuotesService;
 use yii\rest\ActiveController;
 
-class QuoteController extends ActiveController
+class QuoteController extends SafeController
 {
     public $modelClass = Quote::class;
 
