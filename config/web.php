@@ -21,6 +21,7 @@ $config = [
         ],
     ],
     'components' => [
+
         'jwt' => [
             'class' => Jwt::class,
             'key' => 'lqNCkvEXt__5jLmIkUk6AUnRLj4K_qk8',
@@ -48,6 +49,14 @@ $config = [
             'viewPath' => '@app/mail',
             // send all mails to a file by default.
             'useFileTransport' => true,
+            'transport' => [
+                'class' => 'Swift_SmtpTransport',
+                'host' => 'smtp.gmail.com', // Configura el host del servidor de correo saliente
+                'username' => 'payggodev03@gmail.com',
+                'password' => 'Admin01.',
+                'port' => '587',
+                'encryption' => 'tls',
+            ],
         ],
         'log' => [
             'traceLevel' => YII_DEBUG ? 3 : 0,
@@ -75,7 +84,7 @@ $config = [
                 'v1/sales' => 'v1/order',
                 'v1/sales/<order_id:\d+>' => 'v1/order/view',
                 'v1/quotes/khipu/create-payment' => 'v1/quote/create-payment',
-                'POST v1/quotes/khipu/notification/<reference_id:\w+>' => 'v1/quote/notification',
+                'POST v1/quotes/khipu/notification/<reference_id:>' => 'v1/quote/notification',
                 'v1/khipu-account' => 'v1/khipu-account',
                 'v1/khipu-account/<provider_id:\d+>' => 'v1/khipu-account/search-by-provider-id',
                 'POST v1/khipu-account' => 'v1/khipu-account/create',
