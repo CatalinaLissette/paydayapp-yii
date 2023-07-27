@@ -12,5 +12,5 @@ return [
     //'enableSchemaCache' => true,
     //'schemaCacheDuration' => 60,
     //'schemaCache' => 'cache',
-    //'dsn' => 'mysql:host=payday.cl;dbname=payggo',
+   // 'dsn' => 'mysql:host=payday.cl;dbname=payggo',
 ];
