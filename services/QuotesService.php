@@ -98,20 +98,19 @@ class QuotesService
         }
     }
 
-    public function verifyPaymentQuotes(string $notificationToken, string $apiVersion)
+    public function verifyPaymentQuotes(string $notificationToken,string $apiVersion,string $referenceId)
     {
         if($apiVersion !== '1.3'){
             throw new Exception('la version de api khipu es antigua');
         }
-        $payments = $this->kiphuService->getPayments($notificationToken);
+
+        $khipuAcount = $this->getKhipuAccountByReferenceId($referenceId);
+        if($khipuAcount == null)
+            throw new Exception('no se ha encontrado un cobrador valido');
+
+        $payments = $this->kiphuService->getPayments($notificationToken,$khipuAcount->receiver_id, $khipuAcount->key);
 
         $transactionId = intval($payments['transaction_id']);
-
-        $receiver = $this->kiphuService->getReceiverById($payments['receiver_id']);
-        if($receiver == null)
-            throw new Exception('no se ha verificado el cobrador id');
-
-
 
         if($payments['status'] != 'done')
             throw new Exception('el pago no ha sido verificado');
@@ -187,6 +186,11 @@ class QuotesService
         }
         throw new Exception('No se encontró la orden');
 
+    }
+
+    private function getKhipuAccountByReferenceId(string $referenceId)
+    {
+        return $this->kiphuService->getKeysForKhipuByReferenceId($referenceId);
     }
 
 }

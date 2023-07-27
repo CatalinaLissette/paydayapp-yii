@@ -29,6 +29,10 @@ class KhipuService
         return $this->model::findOne(['provider_id' => $providerId]);
     }
 
+    public function getKeysForKhipuByReferenceId(string $referenceId){
+        return $this->model::findOne(['reference_id' => $referenceId]);
+    }
+
 
     public function createPayment(
         int $amount,
@@ -78,15 +82,15 @@ class KhipuService
     //    return '';
     }
 
-    public function getPayments(string $notificationToken)
+    public function getPayments(string $notificationToken, int $receiverId, string $key )
     {
         try {
             $configuration = new Configuration();
             $client = new ApiClient($configuration);
-            $configuration->setReceiverId('438585');
-            $configuration->setSecret('cb8e81a44fa427844c4838d95a6832a0763e3df5');
+            $configuration->setReceiverId($receiverId);
+            $configuration->setSecret($key);
             $payments = new PaymentsApi($client);
-            $pagos = $payments->paymentsGet($notificationToken);
+            return $payments->paymentsGet($notificationToken);
         } catch (ApiException $e) {
             throw new \yii\console\Exception($e);
         }
