@@ -6,7 +6,9 @@ namespace app\services;
 
 use app\models\Order;
 use app\models\Quote;
+use app\enums\StateOrderEnum;
 use Yii;
+use yii\console\Exception;
 
 class OrderService
 {
@@ -69,5 +71,56 @@ class OrderService
             return ['status' => 'error', 'message' => $e->getMessage()];
         }
 
+    }
+
+    public function getOrderFromPaymentId($paymentId)
+    {
+
+        $orderDetail = Quote::find()
+            ->where(['paymentId' => $paymentId])
+            ->all();
+
+
+        if (empty($orderDetail)) {
+            throw new Exception("No se encontraron cuotas asociadas al ID.");
+        }
+
+        $totalPayment = count($orderDetail);
+        $verifyCount = 0;
+
+        foreach ($orderDetail as $item) {
+            if ($item->state === StateOrderEnum::PAYED) {
+                $verifyCount++;
+            }
+        }
+
+        if ($totalPayment !== $verifyCount) {
+            throw new Exception("la quota se encuentra pendiente de pago");
+        }
+
+        return [
+            "message" =>"la cuota fue pagada con exito"
+        ];
+    }
+
+
+    public function getOrderByCommerceId(int $commerce_id)
+    {
+        return  Order::find()
+            ->where(['commerce_id' => $commerce_id])
+            ->all();
+
+    }
+    public function getOrderByProviderId(int $provider_id)
+    {
+        return  Order::find()
+            ->where(['provider_id' => $provider_id])
+            ->all();
+
+    }
+
+    public function getQuotesByOrderId($order_id)
+    {
+        return Order::findOne($order_id);
     }
 }

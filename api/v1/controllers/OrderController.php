@@ -43,13 +43,23 @@ class OrderController extends SafeController
 
     public function actionView($order_id)
     {
-        $order =  new $this->modelClass;
+        return $this->orderService->getQuotesByOrderId($order_id);
+    }
 
-        if ($order !== null) {
-            return $order;
-        } else {
-            throw new \yii\web\NotFoundHttpException("Order with ID $order_id not found.");
-        }
+    public function actionStatusQuotesPayment($payment_id){
+
+
+        return $this->orderService->getOrderFromPaymentId($payment_id);
+    }
+
+    public function actionByCommerce($commerce_id){
+
+        return $this->orderService->getOrderByCommerceId($commerce_id);
+    }
+
+    public function actionByProvider($provider_id){
+
+        return $this->orderService->getOrderByProviderId($provider_id);
     }
 
 }
