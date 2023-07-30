@@ -35,7 +35,7 @@ class Commerce extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['createdAt', 'updatedAt', 'state', 'businessType'], 'required'],
+            [['state', 'businessType'], 'required'],
             [['createdAt', 'updatedAt'], 'safe'],
             [['state'], 'integer'],
             [['businessType'], 'string', 'max' => 45],
