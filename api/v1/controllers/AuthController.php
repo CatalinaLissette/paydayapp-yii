@@ -8,6 +8,8 @@ use app\models\User;
 use app\services\AuthService;
 use app\services\UserService;
 use Yii;
+use yii\filters\Cors;
+use yii\helpers\ArrayHelper;
 use yii\rest\Controller;
 use yii\rest\OptionsAction;
 use yii\web\HttpException;
@@ -45,6 +47,16 @@ class AuthController extends Controller
                 'class' => OptionsAction::class
             ]
         ];
+    }
+
+    public function behaviors()
+    {
+        $behaviors = parent::behaviors();
+        $behaviors['cors'] = [
+            'class' => Cors::class,
+        ];
+
+        return $behaviors;
     }
 
     public function actionLogin()
