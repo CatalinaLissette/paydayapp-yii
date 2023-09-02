@@ -6,9 +6,8 @@ namespace app\api\v1\controllers;
 
 use app\models\User;
 use app\services\UserService;
-use yii\rest\ActiveController;
 
-class UserController extends ActiveController
+class UserController extends SafeController
 {
     public $modelClass = User::class;
     /**
