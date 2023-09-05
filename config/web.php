@@ -92,6 +92,7 @@ $config = [
                 'v1/khipu-account/<provider_id:\d+>' => 'v1/khipu-account/search-by-provider-id',
                 'POST v1/khipu-account' => 'v1/khipu-account/create',
                 //'POST v1/region' => 'v1/region/create',
+                'POST v1/user' => 'v1/user/create',
                 'POST v1/offer' => 'v1/offer/create',
                 'PUT v1/offer/<id:\d+>' => 'v1/offer/update',
                 'v1/offer/provider/<provider_id:\d+>' => 'v1/offer/by-provider',

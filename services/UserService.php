@@ -21,7 +21,7 @@ class UserService
 
     public function createUser(array $data)
     {
-        if ($data['provider']) {
+        if (isset($data['provider'])) {
             $this->createProvider($data);
         } else {
             $this->createCommerce($data);
@@ -50,7 +50,7 @@ class UserService
         }
         unset($data['commerce']);
         $user = new User($data);
-        $user->provider_id = $commerce->id;
+        $user->commerce_id = $commerce->id;
         if (!$user->save()) {
             throw new \Exception(Json::encode($user->errors));
         }
