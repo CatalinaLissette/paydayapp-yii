@@ -10,7 +10,7 @@ use yii\filters\Cors;
 use yii\rest\ActiveController;
 
 
-class UserController extends SafeController
+class UserController extends ActiveController
 {
     public $modelClass = User::class;
     /**
