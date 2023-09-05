@@ -8,7 +8,7 @@ use app\models\Region;
 use yii\filters\Cors;
 use yii\rest\ActiveController;
 
-class RegionController extends ActiveController
+class RegionController extends SafeController
 {
     public $modelClass = Region::class;
 
