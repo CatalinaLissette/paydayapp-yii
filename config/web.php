@@ -75,7 +75,7 @@ $config = [
                 [
                     'class' => 'yii\rest\UrlRule',
                     'controller' => [
-                        'v1/user', 'v1/auth'
+                        'v1/user', 'v1/auth', 'v1/region'
                     ],
                 ],
                 'POST v1/regions/<region_id:\d+>/commune' => 'v1/commune/create',
@@ -91,7 +91,7 @@ $config = [
                 'v1/khipu-account' => 'v1/khipu-account',
                 'v1/khipu-account/<provider_id:\d+>' => 'v1/khipu-account/search-by-provider-id',
                 'POST v1/khipu-account' => 'v1/khipu-account/create',
-                'POST v1/region' => 'v1/region/create',
+                //'POST v1/region' => 'v1/region/create',
                 'POST v1/offer' => 'v1/offer/create',
                 'PUT v1/offer/<id:\d+>' => 'v1/offer/update',
                 'v1/offer/provider/<provider_id:\d+>' => 'v1/offer/by-provider',
