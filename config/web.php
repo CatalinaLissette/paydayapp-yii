@@ -34,6 +34,10 @@ $config = [
             // !!! insert a secret key in the following (if it is empty) - this is required by cookie validation
             'cookieValidationKey' => 'lqNCkvEXt__5jLmIkUk6AUnRLj4K_qk8',
         ],
+        'response' => [
+            'format' => yii\web\Response::FORMAT_JSON,
+            'charset' => 'UTF-8',
+        ],
         'cache' => [
             'class' => 'yii\caching\FileCache',
         ],
@@ -75,7 +79,7 @@ $config = [
                 [
                     'class' => 'yii\rest\UrlRule',
                     'controller' => [
-                        'v1/user', 'v1/auth', 'v1/region'
+                        'v1/user', 'v1/auth', 'v1/region', 'v1/provider'
                     ],
                 ],
                 'POST v1/regions/<region_id:\d+>/commune' => 'v1/commune/create',
@@ -96,7 +100,6 @@ $config = [
                 'POST v1/offer' => 'v1/offer/create',
                 'PUT v1/offer/<id:\d+>' => 'v1/offer/update',
                 'v1/offer/provider/<provider_id:\d+>' => 'v1/offer/by-provider',
-                'GET v1/provider' => 'v1/provider'
             ],
         ],
 
