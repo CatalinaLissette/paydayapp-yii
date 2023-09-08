@@ -116,10 +116,13 @@ class OrderService
             ->all();
 
     }
-    public function getOrderByProviderId(int $provider_id)
+    public function getOrderByProviderId(string $provider_id)
     {
+        $user = User::findOne([
+            'uuid' => $provider_id
+        ]);
         return  Order::find()
-            ->where(['provider_id' => $provider_id])
+            ->where(['provider_id' => $user->provider_id])
             ->all();
 
     }
