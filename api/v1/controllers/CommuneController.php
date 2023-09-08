@@ -8,7 +8,7 @@ use app\models\Commune;
 use yii\filters\Cors;
 use yii\rest\ActiveController;
 
-class CommuneController extends SafeController
+class CommuneController extends ActiveController
 {
     public $modelClass = Commune::class;
 
