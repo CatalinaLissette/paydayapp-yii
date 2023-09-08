@@ -7,6 +7,7 @@ namespace app\services;
 use app\models\Order;
 use app\models\Quote;
 use app\enums\StateOrderEnum;
+use app\models\User;
 use Yii;
 use yii\console\Exception;
 
@@ -104,10 +105,14 @@ class OrderService
     }
 
 
-    public function getOrderByCommerceId(int $commerce_id)
+    public function getOrderByCommerceId(string $commerce_id)
     {
+        $user = User::findOne([
+           'uuid' => $commerce_id
+        ]);
+
         return  Order::find()
-            ->where(['commerce_id' => $commerce_id])
+            ->where(['commerce_id' => $user->commerce_id])
             ->all();
 
     }
