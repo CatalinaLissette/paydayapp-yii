@@ -19,7 +19,7 @@ use yii\helpers\ArrayHelper;
  * @property Notification[] $notifications
  * @property Order[] $orders
  * @property ProviderHasCommerce[] $providerHasCommerces
- * @property User[] $users
+ * @property User[] $user
  */
 class Provider extends \yii\db\ActiveRecord
 {
@@ -97,13 +97,13 @@ class Provider extends \yii\db\ActiveRecord
     }
 
     /**
-     * Gets query for [[Users]].
+     * Gets query for [[User]].
      *
      * @return \yii\db\ActiveQuery
      */
-    public function getUsers()
+    public function getUser()
     {
-        return $this->hasMany(User::class, ['provider_id' => 'id']);
+        return $this->hasOne(User::class, ['provider_id' => 'id']);
     }
 
     public function behaviors()
@@ -116,5 +116,10 @@ class Provider extends \yii\db\ActiveRecord
                 'value' => new Expression('NOW()')
             ]
         ]);
+    }
+
+    public function extraFields()
+    {
+        return ['user'];
     }
 }
