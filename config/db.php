@@ -2,7 +2,7 @@
 
 return [
     'class' => 'yii\db\Connection',
-    'dsn' => 'mysql:host=db;dbname=payggo',
+    //'dsn' => 'mysql:host=db;dbname=payggo',
 
     'username' => 'payggo',
     'password' => 'qwe123',
@@ -12,5 +12,5 @@ return [
     //'enableSchemaCache' => true,
     //'schemaCacheDuration' => 60,
     //'schemaCache' => 'cache',
-   //'dsn' => 'mysql:host=payday.cl;dbname=payggo',
+   'dsn' => 'mysql:host=payday.cl;dbname=payggo',
 ];
