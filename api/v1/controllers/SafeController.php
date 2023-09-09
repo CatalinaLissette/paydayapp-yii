@@ -9,14 +9,16 @@ use yii\filters\auth\HttpBearerAuth;
 use yii\filters\Cors;
 use yii\filters\VerbFilter;
 use yii\rest\ActiveController;
+use yii\rest\Controller;
 
-class SafeController extends ActiveController
+class SafeController extends Controller
 {
     public function behaviors()
     {
         $behaviors = parent::behaviors();
         $behaviors['authenticator'] = [
             'class' => HttpBearerAuth::class,
+            'except'=> ['OPTIONS']
         ];
         $behaviors['cors'] = [
             'class' => Cors::class
@@ -37,9 +39,13 @@ class SafeController extends ActiveController
 
     public function beforeAction($action)
     {
-        if($this->request->isOptions) {
-            return true;
+        parent::beforeAction($action);
+
+        if (Yii::$app->getRequest()->getMethod() === 'OPTIONS') {
+            Yii::$app->getResponse()->getHeaders()->set('Allow', 'POST GET PUT');
+            Yii::$app->end();
         }
-        return parent::beforeAction($action);
+
+        return true;
     }
 }

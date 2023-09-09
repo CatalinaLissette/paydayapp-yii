@@ -3,6 +3,9 @@
 namespace app\models;
 
 use Yii;
+use yii\behaviors\TimestampBehavior;
+use yii\db\Expression;
+use yii\helpers\ArrayHelper;
 
 /**
  * This is the model class for table "provider_has_commerce".
@@ -18,6 +21,7 @@ use Yii;
  */
 class ProviderHasCommerce extends \yii\db\ActiveRecord
 {
+    CONST STATE_PENDING_APROVAL = 2;
     /**
      * {@inheritdoc}
      */
@@ -26,13 +30,21 @@ class ProviderHasCommerce extends \yii\db\ActiveRecord
         return 'provider_has_commerce';
     }
 
+    public static function enroll(array $post): self
+    {
+        $model = new self();
+        $model->load(['ProviderHasCommerce' => $post]);
+        $model->state = self::STATE_PENDING_APROVAL;
+        return $model;
+    }
+
     /**
      * {@inheritdoc}
      */
     public function rules()
     {
         return [
-            [['provider_id', 'commerce_id', 'createdAt', 'updatedAt', 'state'], 'required'],
+            [['provider_id', 'commerce_id', 'state'], 'required'],
             [['provider_id', 'commerce_id', 'state'], 'integer'],
             [['createdAt', 'updatedAt'], 'safe'],
             [['provider_id', 'commerce_id'], 'unique', 'targetAttribute' => ['provider_id', 'commerce_id']],
@@ -73,5 +85,17 @@ class ProviderHasCommerce extends \yii\db\ActiveRecord
     public function getProvider()
     {
         return $this->hasOne(Provider::class, ['id' => 'provider_id']);
+    }
+
+    public function behaviors()
+    {
+        return ArrayHelper::merge(parent::behaviors(), [
+            'timestamp'=> [
+                'class'=>TimestampBehavior::class,
+                'updatedAtAttribute' => 'updatedAt',
+                'createdAtAttribute' => 'createdAt',
+                'value' => new Expression('NOW()')
+            ]
+        ]);
     }
 }
