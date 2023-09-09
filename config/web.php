@@ -96,7 +96,9 @@ $config = [
                 'POST v1/offer' => 'v1/offer/create',
                 'PUT v1/offer/<id:\d+>' => 'v1/offer/update',
                 'v1/offer/provider/<provider_id:\d+>' => 'v1/offer/by-provider',
-                'POST v1/commerce/enroll' => 'v1/commerce/enroll'
+                'GET v1/commerce/<commerce_id:\d+>/providers' => 'v1/commerce/providers',
+                'POST v1/commerce/enroll' => 'v1/commerce/enroll',
+
             ],
         ],
 
