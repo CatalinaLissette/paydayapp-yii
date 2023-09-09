@@ -34,10 +34,6 @@ $config = [
             // !!! insert a secret key in the following (if it is empty) - this is required by cookie validation
             'cookieValidationKey' => 'lqNCkvEXt__5jLmIkUk6AUnRLj4K_qk8',
         ],
-        'response' => [
-            'format' => yii\web\Response::FORMAT_JSON,
-            'charset' => 'UTF-8',
-        ],
         'cache' => [
             'class' => 'yii\caching\FileCache',
         ],
@@ -100,6 +96,7 @@ $config = [
                 'POST v1/offer' => 'v1/offer/create',
                 'PUT v1/offer/<id:\d+>' => 'v1/offer/update',
                 'v1/offer/provider/<provider_id:\d+>' => 'v1/offer/by-provider',
+                'POST v1/commerce/enroll' => 'v1/commerce/enroll'
             ],
         ],
 
