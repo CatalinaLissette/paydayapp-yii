@@ -44,4 +44,14 @@ class CommerceController extends SafeController
         $providers = $this->commerceService->findProviders($commerce_id);
         return $providers;
     }
+
+    public function actionUpdateEnrollment()
+    {
+        $this->response->format = Response::FORMAT_JSON;
+        $this->commerceService->updateEnrollmentState(
+            $this->request->getBodyParams()
+        );
+        $this->response->setStatusCode(201);
+        return ['updated' => true];
+    }
 }

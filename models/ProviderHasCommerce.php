@@ -21,7 +21,8 @@ use yii\helpers\ArrayHelper;
  */
 class ProviderHasCommerce extends \yii\db\ActiveRecord
 {
-    CONST STATE_PENDING_APROVAL = 2;
+    CONST STATE_APPROBED = 1;
+    CONST STATE_PENDING = 2;
     /**
      * {@inheritdoc}
      */
@@ -34,8 +35,15 @@ class ProviderHasCommerce extends \yii\db\ActiveRecord
     {
         $model = new self();
         $model->load(['ProviderHasCommerce' => $post]);
-        $model->state = self::STATE_PENDING_APROVAL;
+        $model->state = self::STATE_PENDING;
         return $model;
+    }
+
+    public static function validateState(int $state)
+    {
+        if (!in_array($state, [self::STATE_APPROBED, self::STATE_PENDING])) {
+            throw new \Exception('invalid state');
+        }
     }
 
     /**
