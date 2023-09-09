@@ -20,7 +20,7 @@ use yii\helpers\ArrayHelper;
  * @property Order[] $orders
  * @property ProviderHasCommerce[] $providerHasCommerces
  * @property Provider[] $providers
- * @property User[] $users
+ * @property User $user
  */
 class Commerce extends \yii\db\ActiveRecord
 {
@@ -100,13 +100,13 @@ class Commerce extends \yii\db\ActiveRecord
     }
 
     /**
-     * Gets query for [[Users]].
+     * Gets query for [[User]].
      *
      * @return \yii\db\ActiveQuery
      */
-    public function getUsers()
+    public function getUser()
     {
-        return $this->hasMany(User::class, ['commerce_id' => 'id']);
+        return $this->hasOne(User::class, ['commerce_id' => 'id']);
     }
 
     public function behaviors()
@@ -120,4 +120,5 @@ class Commerce extends \yii\db\ActiveRecord
             ]
         ]);
     }
+
 }
