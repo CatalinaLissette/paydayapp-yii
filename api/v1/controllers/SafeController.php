@@ -11,7 +11,7 @@ use yii\filters\VerbFilter;
 use yii\rest\ActiveController;
 use yii\rest\Controller;
 
-class SafeController extends Controller
+class SafeController extends ActiveController
 {
     public function behaviors()
     {
