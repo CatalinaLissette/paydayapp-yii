@@ -20,7 +20,8 @@
         "yiisoft/yii2-symfonymailer": "~2.0.3",
         "sizeg/yii2-jwt": "^2.0",
         "ramsey/uuid": "^4.2",
-        "khipu/khipu-api-client": "^2.9"
+        "khipu/khipu-api-client": "^2.9",
+        "yiithings/yii2-dotenv": "*"
     },
     "require-dev": {
         "yiisoft/yii2-debug": "~2.1.0",
