@@ -35,6 +35,8 @@ class ProviderHasCommerce extends \yii\db\ActiveRecord
     {
         $model = new self();
         $model->load(['ProviderHasCommerce' => $post]);
+        $commerce = User::findOne(['uuid' => $post['commerce_id']]);
+        $model->commerce_id = $commerce->commerce_id;
         $model->state = self::STATE_PENDING;
         return $model;
     }
