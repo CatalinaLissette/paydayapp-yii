@@ -6,6 +6,7 @@ namespace app\api\v1\controllers;
 
 use app\models\Commerce;
 use app\models\ProviderHasCommerce;
+use app\models\User;
 use app\services\CommerceService;
 use Yii;
 use yii\helpers\Json;
@@ -38,10 +39,11 @@ class CommerceController extends SafeController
         throw new BadRequestHttpException(Json::encode($model->errors));
     }
 
-    public function actionProviders(string $commerce_id)
+    public function actionProviders(string $user_id)
     {
+        $user = User::findOne(['uuid' => $user_id]);
         $this->response->format = Response::FORMAT_JSON;
-        $providers = $this->commerceService->findProviders($commerce_id);
+        $providers = $this->commerceService->findProviders($user->commerce_id);
         return $providers;
     }
 
