@@ -39,6 +39,14 @@ class CommerceController extends SafeController
         throw new BadRequestHttpException(Json::encode($model->errors));
     }
 
+    public function actionEnrollments()
+    {
+        $status = $this->request->get('state');
+        $this->response->format = Response::FORMAT_JSON;
+        $enrollments = $this->commerceService->enrollments($status);
+        return $enrollments;
+    }
+
     public function actionProviders(string $user_id)
     {
         $user = User::findOne(['uuid' => $user_id]);
