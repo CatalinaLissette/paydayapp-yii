@@ -43,4 +43,11 @@ class CommerceService
         $relation->state =  $state;
         return $relation->save();
     }
+
+    public function enrollments(?int $status)
+    {
+        return ProviderHasCommerce::find()
+            ->filterWhere([ProviderHasCommerce::tableName().'.state' => $status])
+            ->joinWith(['commerce', 'commerce.user', 'provider', 'provider.user'])->asArray(true)->all();
+    }
 }
