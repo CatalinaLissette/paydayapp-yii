@@ -11,6 +11,7 @@ use app\models\User;
 use Yii;
 use yii\console\Exception;
 
+
 class OrderService
 {
     /**
@@ -111,11 +112,26 @@ class OrderService
            'uuid' => $commerce_id
         ]);
 
-        return  Order::find()
+        $order =  Order::find()
             ->where(['commerce_id' => $user->commerce_id])
             ->all();
 
+        $map = function ($item) {
+            $user = User::findOne([
+                'provider_id' => $item->provider_id
+            ]);
+
+
+            return [
+                'provider' => $user,
+                'order' => $item35
+            ];
+        };
+        return array_map($map,$order);
+
     }
+
+
     public function getOrderByProviderId(string $provider_id)
     {
         $user = User::findOne([
