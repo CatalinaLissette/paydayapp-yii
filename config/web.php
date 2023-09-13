@@ -75,7 +75,7 @@ $config = [
                 [
                     'class' => 'yii\rest\UrlRule',
                     'controller' => [
-                        'v1/user', 'v1/auth', 'v1/region', 'v1/provider'
+                        'v1/user', 'v1/auth', 'v1/region', 'v1/provider', 'v1/commerce'
                     ],
                 ],
                 'POST v1/regions/<region_id:\d+>/commune' => 'v1/commune/create',
