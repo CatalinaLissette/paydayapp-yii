@@ -28,6 +28,7 @@ final class AuthService
             ->expiresAt($time + $jwtParams['expire'])
             ->withClaim('uid', $user->uuid)
             ->withClaim('type', $user->getUserType())
+            ->withClaim('userName', $user->name)
             ->getToken($signer, $key);
     }
 
