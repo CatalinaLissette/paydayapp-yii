@@ -224,6 +224,6 @@ class User extends \yii\db\ActiveRecord implements IdentityInterface
         } elseif ($this->commerce) {
             return 'commerce';
         }
-        return 'user';
+        return 'admin';
     }
 }
