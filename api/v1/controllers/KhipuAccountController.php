@@ -16,7 +16,6 @@ class KhipuAccountController extends SafeController
         $model = new $this->modelClass;
 
         $data = $this->request->post();
-        print_r($data);
 
         $model->load(['KhipuAccount' => $data]);
 
