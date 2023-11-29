@@ -98,7 +98,9 @@ $config = [
                 'v1/offer/provider/<provider_id:\d+>' => 'v1/offer/by-provider',
                 'GET,OPTIONS v1/commerce/<user_id:[\w-]{36}>/providers' => 'v1/commerce/providers',
                 'POST v1/commerce/enroll' => 'v1/commerce/enroll',
-                'PUT v1/commerce/enroll' => 'v1/commerce/update-enrollment'
+                'PUT v1/commerce/enroll' => 'v1/commerce/update-enrollment',
+                'PUT v1/commerce/credit' => 'v1/commerce/update-credit',
+                'GET,OPTIONS v1/commerce/<user_id:[\w-]{36}>/provider/<provider_id:\d+>' => 'v1/commerce/provider-commerce',
             ],
         ],
 
