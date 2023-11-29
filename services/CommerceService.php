@@ -41,6 +41,7 @@ class CommerceService
         if (!$relation) throw new NotFoundHttpException();
         ProviderHasCommerce::validateState($state);
         $relation->state =  $state;
+        $relation->credit = 0;
         return $relation->save();
     }
 
@@ -49,5 +50,24 @@ class CommerceService
         return ProviderHasCommerce::find()
             ->filterWhere([ProviderHasCommerce::tableName().'.state' => $status])
             ->joinWith(['commerce', 'commerce.user', 'provider', 'provider.user'])->asArray(true)->all();
+    }
+
+    public function updateCredit(array $params): bool
+    {
+        $commerce_id = $params['commerce_id'];
+        $provider_id = $params['provider_id'];
+        $credit = $params['credit'];
+
+        $relation = ProviderHasCommerce::findOne(['commerce_id' => $commerce_id, 'provider_id' => $provider_id]);
+        if (!$relation) throw new NotFoundHttpException();
+        $relation->credit = $credit;
+        return $relation->save();
+    }
+
+    public function findProviderCommerce( int $commerce_id, int $provider_id)
+    {
+        $commerce = $this->model::findOne($commerce_id);
+        if (!$commerce) throw new NotFoundHttpException();
+        return ProviderHasCommerce::findOne(['commerce_id' => $commerce_id, 'provider_id' => $provider_id]);
     }
 }

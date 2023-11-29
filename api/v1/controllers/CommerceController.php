@@ -64,4 +64,22 @@ class CommerceController extends SafeController
         $this->response->setStatusCode(201);
         return ['updated' => true];
     }
+
+    public function actionUpdateCredit()
+    {
+        $this->response->format = Response::FORMAT_JSON;
+        $this->commerceService->updateCredit(
+            $this->request->getBodyParams()
+        );
+        $this->response->setStatusCode(201);
+        return ['updated' => true];
+    }
+
+    public function actionProviderCommerce(string $user_id, string $provider_id)
+    {
+        $user = User::findOne(['uuid' => $user_id]);
+        $this->response->format = Response::FORMAT_JSON;
+        $providerCommerce = $this->commerceService->findProviderCommerce($user->commerce_id, $provider_id);
+        return $providerCommerce;
+    }
 }

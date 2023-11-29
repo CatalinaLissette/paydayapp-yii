@@ -10,7 +10,7 @@ use app\services\OrderService;
 use Yii;
 use yii\rest\ActiveController;
 
-class OrderController extends SafeController
+class OrderController extends ActiveController
 {
     public $modelClass = Order::class;
 
