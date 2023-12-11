@@ -122,9 +122,8 @@ class QuotesService
 
         $this->setPaymentSuccessfull($transactionId,$payments['payment_id']);
 
-        $email = $this->getEmailByTransactionId($transactionId);
-
-        return $email;
+        //$email = $this->getEmailByTransactionId($transactionId);
+        return "";
 
 
         //TODO OBTENER EMAIL POR TRANSACCIONID
