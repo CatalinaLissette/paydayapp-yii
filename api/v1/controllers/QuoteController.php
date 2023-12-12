@@ -6,9 +6,10 @@ namespace app\api\v1\controllers;
 
 use app\models\Quote;
 use app\services\QuotesService;
+use yii\filters\Cors;
 use yii\rest\ActiveController;
 
-class QuoteController extends SafeController
+class QuoteController extends ActiveController
 {
     public $modelClass = Quote::class;
 
@@ -23,6 +24,16 @@ class QuoteController extends SafeController
     {
         parent::__construct($id, $module, $config);
         $this->quotesService = $quotesService;
+    }
+
+    public function behaviors()
+    {
+        $behaviors = parent::behaviors();
+        $behaviors['cors'] = [
+            'class' => Cors::class,
+        ];
+
+        return $behaviors;
     }
 
     public function actionCreatePayment()

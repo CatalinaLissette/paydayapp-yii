@@ -9,12 +9,14 @@ use app\models\ProviderHasCommerce;
 use app\models\User;
 use app\services\CommerceService;
 use Yii;
+use yii\filters\Cors;
 use yii\helpers\Json;
+use yii\rest\ActiveController;
 use yii\rest\Controller;
 use yii\web\BadRequestHttpException;
 use yii\web\Response;
 
-class CommerceController extends SafeController
+class CommerceController extends ActiveController
 {
     public $modelClass = Commerce::class;
     /**
@@ -26,6 +28,16 @@ class CommerceController extends SafeController
     {
         parent::__construct($id, $module, $config);
         $this->commerceService = $commerceService;
+    }
+
+    public function behaviors()
+    {
+        $behaviors = parent::behaviors();
+        $behaviors['cors'] = [
+            'class' => Cors::class,
+        ];
+
+        return $behaviors;
     }
 
     public function actionEnroll()

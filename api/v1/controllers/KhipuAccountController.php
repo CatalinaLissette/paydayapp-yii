@@ -5,11 +5,22 @@ namespace app\api\v1\controllers;
 
 
 use app\models\KhipuAccount;
+use yii\filters\Cors;
 use yii\rest\ActiveController;
 
-class KhipuAccountController extends SafeController
+class KhipuAccountController extends ActiveController
 {
     public $modelClass = KhipuAccount::class;
+
+    public function behaviors()
+    {
+        $behaviors = parent::behaviors();
+        $behaviors['cors'] = [
+            'class' => Cors::class,
+        ];
+
+        return $behaviors;
+    }
 
     public function actionCreate()
     {

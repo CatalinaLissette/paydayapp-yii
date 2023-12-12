@@ -10,7 +10,7 @@ use app\services\ProviderService;
 use yii\rest\ActiveController;
 use yii\web\Response;
 
-class ProviderController extends SafeController
+class ProviderController extends ActiveController
 {
     public $modelClass = Provider::class;
     /**
@@ -24,6 +24,16 @@ class ProviderController extends SafeController
         $this->service = $service;
     }
 
+    public function behaviors()
+    {
+        $behaviors = parent::behaviors();
+        $behaviors['cors'] = [
+            'class' => Cors::class,
+        ];
+
+        return $behaviors;
+    }
+
     public function actionCommerces(string $user_id)
     {
         $user = User::findOne(['uuid' => $user_id]);
@@ -32,3 +42,4 @@ class ProviderController extends SafeController
         return $commerces;
     }
 }
+
