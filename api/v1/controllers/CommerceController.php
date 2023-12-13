@@ -14,6 +14,7 @@ use yii\helpers\Json;
 use yii\rest\ActiveController;
 use yii\rest\Controller;
 use yii\web\BadRequestHttpException;
+use yii\web\NotFoundHttpException;
 use yii\web\Response;
 
 class CommerceController extends ActiveController
@@ -68,6 +69,7 @@ class CommerceController extends ActiveController
     public function actionProviders(string $user_id)
     {
         $user = User::findOne(['uuid' => $user_id]);
+        if (!$user) throw new NotFoundHttpException("user not found");
         $this->response->format = Response::FORMAT_JSON;
         $providers = $this->commerceService->findProviders($user->commerce_id);
         return $providers;
