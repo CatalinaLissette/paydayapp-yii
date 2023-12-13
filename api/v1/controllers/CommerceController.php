@@ -35,6 +35,12 @@ class CommerceController extends ActiveController
         $behaviors = parent::behaviors();
         $behaviors['cors'] = [
             'class' => Cors::class,
+            'cors' => [
+                'Origin'                           => ['*'],
+                'Access-Control-Request-Method'    => ['POST'],
+                'Access-Control-Allow-Credentials' => true,
+                'Access-Control-Max-Age'           => 3600,                 // Cache (seconds)
+            ]
         ];
 
         return $behaviors;
