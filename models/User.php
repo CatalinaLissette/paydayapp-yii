@@ -182,7 +182,7 @@ class User extends \yii\db\ActiveRecord implements IdentityInterface
     public static function findIdentityByAccessToken($token, $type = null)
     {
         $token = Yii::$app->jwt->getParser()->parse((string) $token);
-
+        Yii::debug($token);
         return static::find()
             ->where(['uuid' => (string) $token->getClaim('uid'), 'state' => self::STATUS_ACTIVE])
             ->one();

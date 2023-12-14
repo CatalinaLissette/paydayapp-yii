@@ -8,6 +8,7 @@ use Yii;
 use yii\filters\auth\HttpBearerAuth;
 use yii\filters\Cors;
 use yii\filters\VerbFilter;
+use yii\helpers\ArrayHelper;
 use yii\rest\ActiveController;
 use yii\rest\Controller;
 
@@ -15,15 +16,14 @@ class SafeController extends ActiveController
 {
     public function behaviors()
     {
-        $behaviors = parent::behaviors();
-        $behaviors['cors'] = [
-            'class' => Cors::class,
-        ];
-        $behaviors['authenticator'] = [
-            'class' => HttpBearerAuth::class,
-        ];
-
-        return $behaviors;
+        return ArrayHelper::merge([
+            'cors' => [
+                'class' => Cors::class
+            ],
+            'authenticator' => [
+                'class' => HttpBearerAuth::class,
+            ]
+        ], parent::behaviors());
     }
 
     protected function verbs()
