@@ -5,6 +5,7 @@ WORKDIR /var/www/html
 COPY . .
 
 RUN apt-get update && apt-get install -y \
+    vim \
     nginx \
     libpng-dev \
     libjpeg-dev \
