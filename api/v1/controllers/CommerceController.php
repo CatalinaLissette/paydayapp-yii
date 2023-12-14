@@ -8,16 +8,12 @@ use app\models\Commerce;
 use app\models\ProviderHasCommerce;
 use app\models\User;
 use app\services\CommerceService;
-use Yii;
-use yii\filters\Cors;
 use yii\helpers\Json;
-use yii\rest\ActiveController;
-use yii\rest\Controller;
 use yii\web\BadRequestHttpException;
 use yii\web\NotFoundHttpException;
 use yii\web\Response;
 
-class CommerceController extends ActiveController
+class CommerceController extends SafeController
 {
     public $modelClass = Commerce::class;
     /**
@@ -31,31 +27,17 @@ class CommerceController extends ActiveController
         $this->commerceService = $commerceService;
     }
 
-    public function behaviors()
-    {
-        $behaviors = parent::behaviors();
-        $behaviors['cors'] = [
-            'class' => Cors::class,
-            'cors' => [
-                'Origin'                           => ['*'],
-                'Access-Control-Request-Method'    => ['POST'],
-                'Access-Control-Allow-Credentials' => true,
-                'Access-Control-Max-Age'           => 3600,                 // Cache (seconds)
-            ]
-        ];
-
-        return $behaviors;
-    }
 
     public function actionEnroll()
     {
-        $model = ProviderHasCommerce::enroll($this->request->post());
-        $this->response->format = 'json';
-        if ($model->save()) {
-             $this->response->setStatusCode(201);
-            return ['created' => true];
-        }
-        throw new BadRequestHttpException(Json::encode($model->errors));
+//        $model = ProviderHasCommerce::enroll($this->request->post());
+//        $this->response->format = 'json';
+//        if ($model->save()) {
+//             $this->response->setStatusCode(201);
+//            return ['created' => true];
+//        }
+//        throw new BadRequestHttpException(Json::encode($model->errors));
+        return "";
     }
 
     public function actionEnrollments()
