@@ -16,13 +16,13 @@ class SafeController extends ActiveController
     public function behaviors()
     {
         $behaviors = parent::behaviors();
-        $behaviors['authenticator'] = [
-            'class' => HttpBearerAuth::class,
-            'except'=> ['OPTIONS'],
-        ];
         $behaviors['cors'] = [
             'class' => Cors::class,
         ];
+        $behaviors['authenticator'] = [
+            'class' => HttpBearerAuth::class,
+        ];
+
         return $behaviors;
     }
 
