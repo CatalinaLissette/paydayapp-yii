@@ -21,7 +21,15 @@ $config = [
         ],
     ],
     'components' => [
-
+        'response' => [
+            'class' => 'yii\web\Reponse',
+            'on beforeSend' => function ($event) {
+                header("Access-Control-Allow-Credentials: true");
+                header("Access-Control-Allow-Headers: X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version, Authorization");
+                header("Access-Control-Allow-Methods: PUT, GET, POST, OPTION, DELETE");
+                header("Access-Control-Allow-Origin: *");
+            }
+        ],
         'jwt' => [
             'class' => Jwt::class,
             'key' => 'lqNCkvEXt__5jLmIkUk6AUnRLj4K_qk8',

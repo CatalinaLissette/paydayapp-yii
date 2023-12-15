@@ -26,6 +26,7 @@ class SafeController extends ActiveController
         ], parent::behaviors());
     }
 
+
     protected function verbs()
     {
         return [
