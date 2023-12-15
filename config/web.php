@@ -22,7 +22,7 @@ $config = [
     ],
     'components' => [
         'response' => [
-            'class' => 'yii\web\Reponse',
+            'class' => \yii\web\Response::class,
             'on beforeSend' => function ($event) {
                 header("Access-Control-Allow-Credentials: true");
                 header("Access-Control-Allow-Headers: X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version, Authorization");
