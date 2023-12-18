@@ -30,13 +30,13 @@ class CommerceController extends SafeController
 
     public function actionEnroll()
     {
-//        $model = ProviderHasCommerce::enroll($this->request->post());
-//        $this->response->format = 'json';
-//        if ($model->save()) {
-//             $this->response->setStatusCode(201);
-//            return ['created' => true];
-//        }
-//        throw new BadRequestHttpException(Json::encode($model->errors));
+        $model = ProviderHasCommerce::enroll($this->request->post());
+        $this->response->format = 'json';
+        if ($model->save()) {
+             $this->response->setStatusCode(201);
+            return ['created' => true];
+        }
+        throw new BadRequestHttpException(Json::encode($model->errors));
         return "";
     }
 
