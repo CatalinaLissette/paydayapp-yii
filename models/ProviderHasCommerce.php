@@ -3,6 +3,9 @@
 namespace app\models;
 
 use Yii;
+use yii\behaviors\TimestampBehavior;
+use yii\db\Expression;
+use yii\helpers\ArrayHelper;
 
 /**
  * This is the model class for table "provider_has_commerce".
@@ -19,6 +22,8 @@ use Yii;
  */
 class ProviderHasCommerce extends \yii\db\ActiveRecord
 {
+    CONST STATE_APPROBED = 1;
+    CONST STATE_PENDING = 2;
     /**
      * {@inheritdoc}
      */
@@ -27,15 +32,17 @@ class ProviderHasCommerce extends \yii\db\ActiveRecord
         return 'provider_has_commerce';
     }
 
+
     /**
      * {@inheritdoc}
      */
     public function rules()
     {
         return [
-            [['provider_id', 'createdAt', 'updatedAt', 'state', 'commerce_id'], 'required'],
-            [['provider_id', 'state', 'commerce_id', 'credit'], 'integer'],
+            [['provider_id', 'commerce_id', 'state','credit'], 'required'],
+            [['provider_id', 'commerce_id', 'state','credit'], 'integer'],
             [['createdAt', 'updatedAt'], 'safe'],
+            [['provider_id', 'commerce_id'], 'unique', 'targetAttribute' => ['provider_id', 'commerce_id']],
             [['commerce_id'], 'exist', 'skipOnError' => true, 'targetClass' => Commerce::class, 'targetAttribute' => ['commerce_id' => 'id']],
             [['provider_id'], 'exist', 'skipOnError' => true, 'targetClass' => Provider::class, 'targetAttribute' => ['provider_id' => 'id']],
         ];
@@ -74,5 +81,35 @@ class ProviderHasCommerce extends \yii\db\ActiveRecord
     public function getProvider()
     {
         return $this->hasOne(Provider::class, ['id' => 'provider_id']);
+    }
+
+
+    public function behaviors()
+    {
+        return ArrayHelper::merge(parent::behaviors(), [
+            'timestamp'=> [
+                'class'=>TimestampBehavior::class,
+                'updatedAtAttribute' => 'updatedAt',
+                'createdAtAttribute' => 'createdAt',
+                'value' => new Expression('NOW()')
+            ]
+        ]);
+    }
+
+    public static function enroll(array $post): self
+    {
+        $model = new self();
+        $model->credit = 0;
+        $model->load(['ProviderHasCommerce' => $post]);
+        $commerce = User::findOne(['uuid' => $post['commerce_id']]);
+        $model->commerce_id = $commerce->commerce_id;
+        $model->state = self::STATE_PENDING;
+        return $model;
+    }
+    public static function validateState(int $state)
+    {
+        if (!in_array($state, [self::STATE_APPROBED, self::STATE_PENDING])) {
+            throw new \Exception('invalid state');
+        }
     }
 }

@@ -30,6 +30,7 @@ class CommerceController extends SafeController
 
     public function actionEnroll()
     {
+
         $model = ProviderHasCommerce::enroll($this->request->post());
         $this->response->format = 'json';
         if ($model->save()) {
