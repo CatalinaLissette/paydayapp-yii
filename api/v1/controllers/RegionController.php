@@ -5,7 +5,9 @@ namespace app\api\v1\controllers;
 
 
 use app\models\Region;
+use yii\filters\auth\HttpBearerAuth;
 use yii\filters\Cors;
+use yii\helpers\ArrayHelper;
 use yii\rest\ActiveController;
 
 class RegionController extends ActiveController
@@ -14,11 +16,34 @@ class RegionController extends ActiveController
 
     public function behaviors()
     {
-        $behaviors = parent::behaviors();
-        $behaviors['cors'] = [
-            'class' => Cors::class
+        return ArrayHelper::merge([
+            'cors' => [
+                'class' => Cors::class
+            ]
+        ], parent::behaviors());
+    }
+
+
+    protected function verbs()
+    {
+        return [
+            'index' => ['GET', 'HEAD'],
+            'view' => ['GET', 'HEAD'],
+            'create' => ['POST'],
+            'update' => ['PUT', 'PATCH'],
+            'delete' => ['DELETE'],
         ];
-        return $behaviors;
+    }
+
+    public function beforeAction($action)
+    {
+        if (Yii::$app->getRequest()->getMethod() === 'OPTIONS') {
+            Yii::debug('is options');
+            Yii::$app->getResponse()->getHeaders()->set('Allow', 'POST GET PUT');
+            Yii::$app->end();
+            return;
+        }
+        return parent::beforeAction($action);
     }
 
 

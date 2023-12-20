@@ -10,7 +10,7 @@ use Yii;
 use yii\filters\Cors;
 use yii\rest\ActiveController;
 
-class OfferController extends ActiveController
+class OfferController extends SafeController
 {
     public $modelClass = Offer::class;
     private OfferService $offerService;
@@ -26,15 +26,6 @@ class OfferController extends ActiveController
         $this->offerService = $offerService;
     }
 
-    public function behaviors()
-    {
-        $behaviors = parent::behaviors();
-        $behaviors['cors'] = [
-            'class' => Cors::class,
-        ];
-
-        return $behaviors;
-    }
 
     public function actionCreate()
     {

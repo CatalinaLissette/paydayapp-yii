@@ -11,7 +11,7 @@ use Yii;
 use yii\filters\Cors;
 use yii\rest\ActiveController;
 
-class OrderController extends ActiveController
+class OrderController extends SafeController
 {
     public $modelClass = Order::class;
 
@@ -26,15 +26,6 @@ class OrderController extends ActiveController
     {
         parent::__construct($id, $module, $config);
         $this->orderService = $orderService;
-    }
-    public function behaviors()
-    {
-        $behaviors = parent::behaviors();
-        $behaviors['cors'] = [
-            'class' => Cors::class,
-        ];
-
-        return $behaviors;
     }
 
     public function actions()
