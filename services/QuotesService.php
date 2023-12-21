@@ -53,14 +53,16 @@ class QuotesService
 
         try {
             $result = $this->kiphuService->getKeysForKhipu($providerId);
+            if(!$result)
+                throw new \Exception("no se ha encontrado asociacion de khipu para el proveedor");
 
             $notifyUrl = "https://payday.cl/v1/quotes/khipu/notification/{$result->reference_id}";
 
 
             $result = $this->kiphuService->createPayment($amount, $email, $subject,$notifyUrl,$orderId, $result);
-            //VALIDAR QUE PAYMENT_ID VENGA
             $paymentId = $result['payment_id'];
-
+            if(!$paymentId)
+                throw new \Exception("no se ha generado el paymentId");
 
             $this->setPaymentIdInOrderDetail($paymentId, $orderDetail, $orderId);
 
