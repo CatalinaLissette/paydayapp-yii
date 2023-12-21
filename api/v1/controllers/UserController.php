@@ -6,7 +6,6 @@ namespace app\api\v1\controllers;
 
 use app\models\User;
 use app\services\UserService;
-use yii\filters\auth\HttpBearerAuth;
 use yii\filters\Cors;
 use yii\helpers\ArrayHelper;
 use yii\rest\ActiveController;
@@ -49,10 +48,10 @@ class UserController extends ActiveController
 
     public function beforeAction($action)
     {
-        if (Yii::$app->getRequest()->getMethod() === 'OPTIONS') {
-            Yii::debug('is options');
-            Yii::$app->getResponse()->getHeaders()->set('Allow', 'POST GET PUT');
-            Yii::$app->end();
+        if (\Yii::$app->getRequest()->getMethod() === 'OPTIONS') {
+            \Yii::debug('is options');
+            \Yii::$app->getResponse()->getHeaders()->set('Allow', 'POST GET PUT');
+            \Yii::$app->end();
             return;
         }
         return parent::beforeAction($action);
