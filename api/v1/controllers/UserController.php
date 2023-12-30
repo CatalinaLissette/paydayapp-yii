@@ -11,7 +11,7 @@ use yii\helpers\ArrayHelper;
 use yii\rest\ActiveController;
 
 
-class UserController extends ActiveController
+class UserController extends SafeController
 {
     public $modelClass = User::class;
     /**
