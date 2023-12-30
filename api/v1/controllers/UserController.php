@@ -34,19 +34,6 @@ class UserController extends ActiveController
         ], parent::behaviors());
     }
 
-
-    protected function verbs()
-    {
-        return [
-            'index' => ['GET', 'HEAD'],
-            'view' => ['GET', 'HEAD'],
-            'create' => ['POST'],
-            'update' => ['PUT', 'PATCH'],
-            'delete' => ['DELETE'],
-        ];
-    }
-
-
     public function actions()
     {
         $actions = parent::actions();
