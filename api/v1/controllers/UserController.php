@@ -46,16 +46,7 @@ class UserController extends ActiveController
         ];
     }
 
-    public function beforeAction($action)
-    {
-        if (\Yii::$app->getRequest()->getMethod() === 'OPTIONS') {
-            \Yii::debug('is options');
-            \Yii::$app->getResponse()->getHeaders()->set('Allow', 'POST GET PUT');
-            \Yii::$app->end();
-            return;
-        }
-        return parent::beforeAction($action);
-    }
+
     public function actions()
     {
         $actions = parent::actions();
