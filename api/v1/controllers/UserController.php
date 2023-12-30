@@ -8,7 +8,6 @@ use app\models\User;
 use app\services\UserService;
 use yii\filters\Cors;
 use yii\helpers\ArrayHelper;
-use yii\rest\ActiveController;
 
 
 class UserController extends SafeController
