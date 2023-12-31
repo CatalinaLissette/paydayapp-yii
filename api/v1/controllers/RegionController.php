@@ -10,7 +10,7 @@ use yii\filters\Cors;
 use yii\helpers\ArrayHelper;
 use yii\rest\ActiveController;
 
-class RegionController extends SafeController
+class RegionController extends ActiveController
 {
     public $modelClass = Region::class;
 
