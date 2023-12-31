@@ -5,6 +5,7 @@ namespace app\api\v1\controllers;
 
 
 use app\models\Commune;
+use yii\data\ActiveDataProvider;
 use yii\filters\auth\HttpBearerAuth;
 use yii\filters\Cors;
 use yii\helpers\ArrayHelper;
@@ -30,6 +31,13 @@ class CommuneController extends ActiveController
         unset($actions['create']);
 
         return $actions;
+    }
+
+    public function actionRegion(int $regionId)
+    {
+        return new ActiveDataProvider([
+            'query' => Commune::find()->where(['region_id' => $regionId, 'state' => 1])
+        ]);
     }
 
     public function actionCreate($region_id)
