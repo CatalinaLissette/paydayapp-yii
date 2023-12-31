@@ -25,6 +25,17 @@ class ProviderController extends SafeController
     }
 
 
+    public function actions()
+    {
+        $actions = parent::actions();
+        unset($actions['view']);
+        return $actions;
+    }
+
+    public function actionView(string $uuid)
+    {
+        return $this->service->findByUuid($uuid);
+    }
 
     public function actionCommerces(string $user_id)
     {

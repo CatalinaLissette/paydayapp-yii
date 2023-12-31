@@ -107,6 +107,7 @@ $config = [
                 'GET,OPTIONS v1/commerce/<user_id:[\w-]{36}>/providers' => 'v1/commerce/providers',
                 'GET,OPTIONS v1/provider/<user_id:[\w-]{36}>/commerces' => 'v1/provider/commerces',
                 'v1/commune/region/<regionId:\d+>' => 'v1/commune/region',
+                'v1/provider/<uuid:\w+>' => 'v1/provider/view',
                 'POST v1/commerce/enroll' => 'v1/commerce/enroll',
                 'PUT v1/commerce/enroll' => 'v1/commerce/update-enrollment',
                 'PUT v1/commerce/credit' => 'v1/commerce/update-credit',
