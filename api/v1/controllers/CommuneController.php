@@ -35,9 +35,10 @@ class CommuneController extends ActiveController
 
     public function actionRegion(int $regionId)
     {
-        return new ActiveDataProvider([
+        $ad =  new ActiveDataProvider([
             'query' => Commune::find()->where(['region_id' => $regionId, 'state' => 1])
         ]);
+        return $ad->getModels();
     }
 
     public function actionCreate($region_id)
