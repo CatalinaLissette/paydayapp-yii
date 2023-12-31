@@ -10,7 +10,7 @@ use yii\filters\Cors;
 use yii\helpers\ArrayHelper;
 use yii\rest\ActiveController;
 
-class RegionController extends ActiveController
+class RegionController extends SafeController
 {
     public $modelClass = Region::class;
 
@@ -24,27 +24,7 @@ class RegionController extends ActiveController
     }
 
 
-    protected function verbs()
-    {
-        return [
-            'index' => ['GET', 'HEAD'],
-            'view' => ['GET', 'HEAD'],
-            'create' => ['POST'],
-            'update' => ['PUT', 'PATCH'],
-            'delete' => ['DELETE'],
-        ];
-    }
 
-    public function beforeAction($action)
-    {
-        if (Yii::$app->getRequest()->getMethod() === 'OPTIONS') {
-            Yii::debug('is options');
-            Yii::$app->getResponse()->getHeaders()->set('Allow', 'POST GET PUT');
-            Yii::$app->end();
-            return;
-        }
-        return parent::beforeAction($action);
-    }
 
 
     public function actions()
