@@ -3,6 +3,7 @@
 
 namespace app\services;
 
+use app\enums\StateOrderEnum;
 use app\models\Order;
 use app\models\Quote;
 use app\models\User;
@@ -86,9 +87,11 @@ class QuotesService
             ]);
 
             if ($getOrderDetail) {
-                // Actualizar el campo 'payment_id' en la tabla 'quote'
                 $this->quoteModel::updateAll(
-                    ['paymentId' => $paymentId],
+                    [
+                        'paymentId' => $paymentId,
+                        'state' => StateOrderEnum::PROCESSING
+                    ],
                     [
                         'id' => $getOrderDetail['id'],
                         'order_id' => $orderId,
@@ -114,21 +117,14 @@ class QuotesService
 
         $transactionId = intval($payments['transaction_id']);
 
-        if($payments['status'] != 'done')
-            throw new Exception('el pago no ha sido verificado');
-
         $amountFromdb = $this->getAmountByOrderDetail($transactionId,$payments['payment_id']);
 
-        if(intval($amountFromdb) !== intval($payments['amount']))
-            throw new Exception('los montos de pago no coinciden');
-
-        $this->setPaymentSuccessfull($transactionId,$payments['payment_id']);
-
-        //$email = $this->getEmailByTransactionId($transactionId);
-        return "";
-
-
-        //TODO OBTENER EMAIL POR TRANSACCIONID
+        if($payments['status'] == 'done' && intval($amountFromdb) == intval($payments['amount'])){
+            $this->setPaymentState($transactionId,$payments['payment_id'], StateOrderEnum::PAYED);
+        }else{
+            $this->setPaymentState($transactionId,$payments['payment_id'], StateOrderEnum::PENDING);
+            throw new Exception('el pago no ha sido verificado');
+        }
 
     }
 
@@ -144,7 +140,7 @@ class QuotesService
 
     }
 
-    private function setPaymentSuccessfull(int $id, string $payment_id)
+    private function setPaymentState(int $id, string $payment_id, string $state)
     {
         $order = $this->orderModel::findOne($id);
         if (!$order)
@@ -153,7 +149,7 @@ class QuotesService
 
         foreach ($quotes as $quote){
             if($quote['paymentId'] == $payment_id){
-                $quote->state = 3;
+                $quote->state = $state;
                 $quote->save();
             }
 
