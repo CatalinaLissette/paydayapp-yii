@@ -84,7 +84,9 @@ class OrderService
 
 
         if (empty($orderDetail)) {
-            throw new Exception("No se encontraron cuotas asociadas al ID.");
+            return [
+                "message" =>"no hay cuotas asociadas al paymentID"
+            ];
         }
 
         $totalPayment = count($orderDetail);
