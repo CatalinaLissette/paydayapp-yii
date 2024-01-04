@@ -40,6 +40,16 @@ class QuoteController extends SafeController
         );
 
     }
+    public function actionDeletePayment()
+    {
+        $post = $this->request->post();
+        return $this->quotesService->deletePayment(
+            $post['paymentId'],
+            $post['providerId'],
+            $post['orderId'],
+        );
+
+    }
 
     public function actionNotification($reference_id)
     {

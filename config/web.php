@@ -95,6 +95,7 @@ $config = [
                 'v1/sales/provider/<provider_id:>' => 'v1/order/by-provider',
                 'GET v1/sales/payment/status/<payment_id:>' => 'v1/order/status-quotes-payment',
                 'POST v1/quotes/khipu/create-payment' => 'v1/quote/create-payment',
+                'POST v1/quotes/khipu/delete-payment' => 'v1/quote/delete-payment',
                 'POST v1/quotes/khipu/notification/<reference_id:>' => 'v1/notification-khipu/notification',
                 'POST v1/khipu-account' => 'v1/khipu-account',
                 'v1/khipu-account/<provider_id:\d+>' => 'v1/khipu-account/search-by-provider-id',
