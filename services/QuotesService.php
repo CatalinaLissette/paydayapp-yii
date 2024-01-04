@@ -90,7 +90,7 @@ class QuotesService
                 throw new \Exception("no se ha encontrado asociacion de khipu para el proveedor");
 
             $result = $this->kiphuService->deletePayment($paymentId, $result);
-            $this->setPaymentState($orderId,null, StateOrderEnum::PENDING, false);
+            $this->setPaymentState($orderId,$paymentId, StateOrderEnum::PENDING, false);
             return $result;
     }
 
