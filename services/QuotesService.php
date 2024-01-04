@@ -78,6 +78,22 @@ class QuotesService
         }
     }
 
+    public function deletePayment(
+        string $paymentId,
+        int $providerId,
+        int $orderId
+    )
+    {
+
+            $result = $this->kiphuService->getKeysForKhipu($providerId);
+            if(!$result)
+                throw new \Exception("no se ha encontrado asociacion de khipu para el proveedor");
+
+            $result = $this->kiphuService->deletePayment($paymentId, $result);
+            $this->setPaymentState($orderId,null, StateOrderEnum::PENDING, false);
+            return $result;
+    }
+
     private function setPaymentIdInOrderDetail(string $paymentId, array $orderDetail, int $orderId)
     {
         foreach ($orderDetail as $detail) {
@@ -120,9 +136,9 @@ class QuotesService
         $amountFromdb = $this->getAmountByOrderDetail($transactionId,$payments['payment_id']);
 
         if($payments['status'] == 'done' && intval($amountFromdb) == intval($payments['amount'])){
-            $this->setPaymentState($transactionId,$payments['payment_id'], StateOrderEnum::PAYED);
+            $this->setPaymentState($transactionId,$payments['payment_id'], StateOrderEnum::PAYED, true);
         }else{
-            $this->setPaymentState($transactionId,$payments['payment_id'], StateOrderEnum::PENDING);
+            $this->setPaymentState($transactionId,$payments['payment_id'], StateOrderEnum::PENDING, false);
             throw new Exception('el pago no ha sido verificado');
         }
 
@@ -140,7 +156,7 @@ class QuotesService
 
     }
 
-    private function setPaymentState(int $id, string $payment_id, string $state)
+    private function setPaymentState(int $id, string $payment_id, string $state,bool $opt)
     {
         $order = $this->orderModel::findOne($id);
         if (!$order)
@@ -148,8 +164,12 @@ class QuotesService
         $quotes = $order->quotes;
 
         foreach ($quotes as $quote){
-            if($quote['paymentId'] == $payment_id){
+            if($opt && $quote['paymentId'] == $payment_id){
                 $quote->state = $state;
+                $quote->save();
+            }else if(!$opt && $quote['paymentId'] == $payment_id){
+                $quote->state = $state;
+                $quote->paymentId = null;
                 $quote->save();
             }
 
