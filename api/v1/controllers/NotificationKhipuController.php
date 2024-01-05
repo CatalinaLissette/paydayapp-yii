@@ -28,6 +28,7 @@ class NotificationKhipuController extends ActiveController
     public function actionNotification($reference_id)
     {
         $post = $this->request->post();
+        \Yii::debug($post);
 
         $this->quotesService->verifyPaymentQuotes($post['notification_token'],$post['api_version'],$reference_id);
 
