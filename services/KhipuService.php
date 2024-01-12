@@ -4,6 +4,8 @@
 namespace app\services;
 
 use app\models\KhipuAccount;
+use DateInterval;
+use DateTime;
 use Khipu\ApiException;
 use Khipu\Configuration;
 use Khipu\ApiClient;
@@ -44,21 +46,22 @@ class KhipuService
     )
     {
 
-        $configuration = new Configuration();
-        $configuration->setReceiverId($khipuAccount->receiver_id);
-        $configuration->setSecret($khipuAccount->key);
+            $configuration = new Configuration();
+            $configuration->setReceiverId($khipuAccount->receiver_id);
+            $configuration->setSecret($khipuAccount->key);
 
-        $client = new ApiClient($configuration);
-        $payments = new PaymentsApi($client);
-
-      //  try {
+            $client = new ApiClient($configuration);
+            $payments = new PaymentsApi($client);
+            $expires_date = new DateTime();
+            $expires_date->add(new DateInterval('PT5M'));
             $opts = array(
                 "payer_email" => $email,
                 "notify_url" => $notifyUrl,
                 "notify_api_version" => "1.3",
-                "transaction_id" => $transactionId
+                "transaction_id" => $transactionId,
+                "expires_date" => $expires_date,
               //  "return_url" => "http://mi-ecomerce.com/backend/return",
-              //  "cancel_url" => "http://mi-ecomerce.com/backend/cancel",
+                "cancel_url" => "https://portal.payday.cl/v1/quotes/khipu/delete-payment",
               //  "picture_url" => "http://mi-ecomerce.com/pictures/foto-producto.jpg",
 
             );
@@ -76,10 +79,22 @@ class KhipuService
                 'transfer_url' => $response['transfer_url'],
                 'app_url' => $response['app_url'],
             ];
-//        } catch (\Khipu\ApiException $e) {
-//            return $e->getResponseBody();
-//        }
-    //    return '';
+    }
+
+    public function deletePayment(
+        string $paymentId,
+        KhipuAccount $khipuAccount
+    )
+    {
+
+        $configuration = new Configuration();
+        $configuration->setReceiverId($khipuAccount->receiver_id);
+        $configuration->setSecret($khipuAccount->key);
+
+        $client = new ApiClient($configuration);
+        $payments = new PaymentsApi($client);
+
+        return $payments->paymentsIdDelete($paymentId);
     }
 
     public function getPayments(string $notificationToken, int $receiverId, string $key )

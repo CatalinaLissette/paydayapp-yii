@@ -40,18 +40,15 @@ class QuoteController extends SafeController
         );
 
     }
-
-    public function actionNotification($reference_id)
+    public function actionDeletePayment()
     {
         $post = $this->request->post();
-        \Yii::debug($post);
+        return $this->quotesService->deletePayment(
+            $post['paymentId'],
+            $post['providerId'],
+            $post['orderId'],
+        );
 
-
-        $email = $this->quotesService->verifyPaymentQuotes($post['notification_token'],$post['api_version'],$reference_id);
-
-        //TODO:ENVIAR EMAIL
-
-        return [];
     }
 
 }
