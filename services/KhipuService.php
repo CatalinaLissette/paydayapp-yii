@@ -59,9 +59,9 @@ class KhipuService
                 "notify_url" => $notifyUrl,
                 "notify_api_version" => "1.3",
                 "transaction_id" => $transactionId,
-                "expires_date" => $expires_date
+                "expires_date" => $expires_date,
               //  "return_url" => "http://mi-ecomerce.com/backend/return",
-              //  "cancel_url" => "http://mi-ecomerce.com/backend/cancel",
+                "cancel_url" => "https://portal.payday.cl/v1/quotes/khipu/delete-payment",
               //  "picture_url" => "http://mi-ecomerce.com/pictures/foto-producto.jpg",
 
             );
