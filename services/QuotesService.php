@@ -56,9 +56,8 @@ class QuotesService
             if(!$result)
                 throw new \Exception("no se ha encontrado asociacion de khipu para el proveedor");
 
-            $notifyUrl = "https://payday.cl/v1/quotes/khipu/notification/{$result->reference_id}";
-            $cancelUrl = "https://payday.cl/v1/quotes/khipu/notification/{$orderDetail[0]['id']}";
-
+            $notifyUrl = "https://portal.payday.cl/v1/quotes/khipu/notification/{$result->reference_id}";
+            $cancelUrl = "https://portal.payday.cl/v1/quotes/khipu/notification/cancel-payment/{$orderDetail[0]['id']}";
 
             $result = $this->kiphuService->createPayment($amount, $email, $subject,$notifyUrl,$orderId, $result,$cancelUrl);
             $paymentId = $result['payment_id'];
