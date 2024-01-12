@@ -42,7 +42,8 @@ class KhipuService
         string $subject,
         string $notifyUrl,
         int $transactionId,
-        KhipuAccount $khipuAccount
+        KhipuAccount $khipuAccount,
+        string $cancelUrl
     )
     {
 
@@ -61,7 +62,7 @@ class KhipuService
                 "transaction_id" => $transactionId,
                 "expires_date" => $expires_date,
               //  "return_url" => "http://mi-ecomerce.com/backend/return",
-                "cancel_url" => "https://portal.payday.cl/v1/quotes/khipu/delete-payment",
+                "cancel_url" => $cancelUrl,
               //  "picture_url" => "http://mi-ecomerce.com/pictures/foto-producto.jpg",
 
             );

@@ -58,9 +58,10 @@ class QuotesService
                 throw new \Exception("no se ha encontrado asociacion de khipu para el proveedor");
 
             $notifyUrl = "https://payday.cl/v1/quotes/khipu/notification/{$result->reference_id}";
+            $cancelUrl = "https://payday.cl/v1/quotes/khipu/notification/{$orderDetail[0]}";
 
 
-            $result = $this->kiphuService->createPayment($amount, $email, $subject,$notifyUrl,$orderId, $result);
+            $result = $this->kiphuService->createPayment($amount, $email, $subject,$notifyUrl,$orderId, $result,$cancelUrl);
             $paymentId = $result['payment_id'];
             if(!$paymentId)
                 throw new \Exception("no se ha generado el paymentId");
@@ -189,13 +190,15 @@ class QuotesService
         return ArrayHelper::toArray($order->quotes);
     }
 
-    public function cancelPayment($paymentId)
+    public function cancelPayment($quote_id)
     {
+
+        $quote = $this->quoteModel::findOne($quote_id);
         $this->quoteModel::updateAll([
             'paymentId' => null,
             'state' => StateOrderEnum::PENDING
         ],[
-           'paymentId'=> $paymentId
+           'paymentId'=> $quote->paymentId
         ]);
     }
 
