@@ -51,14 +51,13 @@ class QuotesService
     )
     {
         $transaction = Yii::$app->db->beginTransaction();
-
         try {
             $result = $this->kiphuService->getKeysForKhipu($providerId);
             if(!$result)
                 throw new \Exception("no se ha encontrado asociacion de khipu para el proveedor");
 
             $notifyUrl = "https://payday.cl/v1/quotes/khipu/notification/{$result->reference_id}";
-            $cancelUrl = "https://payday.cl/v1/quotes/khipu/notification/{$orderDetail[0]}";
+            $cancelUrl = "https://payday.cl/v1/quotes/khipu/notification/{$orderDetail[0]['id']}";
 
 
             $result = $this->kiphuService->createPayment($amount, $email, $subject,$notifyUrl,$orderId, $result,$cancelUrl);
