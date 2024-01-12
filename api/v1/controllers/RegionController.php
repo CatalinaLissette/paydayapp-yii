@@ -4,7 +4,9 @@
 namespace app\api\v1\controllers;
 
 
+use app\models\Commune;
 use app\models\Region;
+use yii\data\ActiveDataProvider;
 use yii\filters\auth\HttpBearerAuth;
 use yii\filters\Cors;
 use yii\helpers\ArrayHelper;
@@ -24,27 +26,7 @@ class RegionController extends ActiveController
     }
 
 
-    protected function verbs()
-    {
-        return [
-            'index' => ['GET', 'HEAD'],
-            'view' => ['GET', 'HEAD'],
-            'create' => ['POST'],
-            'update' => ['PUT', 'PATCH'],
-            'delete' => ['DELETE'],
-        ];
-    }
 
-    public function beforeAction($action)
-    {
-        if (Yii::$app->getRequest()->getMethod() === 'OPTIONS') {
-            Yii::debug('is options');
-            Yii::$app->getResponse()->getHeaders()->set('Allow', 'POST GET PUT');
-            Yii::$app->end();
-            return;
-        }
-        return parent::beforeAction($action);
-    }
 
 
     public function actions()
@@ -53,6 +35,9 @@ class RegionController extends ActiveController
         unset($actions['create']);
         return $actions;
     }
+
+
+
 
     public function actionCreate()
     {

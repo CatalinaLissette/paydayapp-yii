@@ -29,4 +29,11 @@ class ProviderService
             ->joinWith(['commerce', 'commerce.user', 'provider', 'provider.user'])
             ->asArray(true)->all();
     }
+
+    public function findByUuid(string $uuid)
+    {
+        $provider = $this->model::findOne(['uuid' => $uuid]);
+        if (!$provider) throw new NotFoundHttpException();
+        return $provider;
+    }
 }

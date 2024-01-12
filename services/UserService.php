@@ -35,7 +35,7 @@ class UserService
             throw new \Exception(Json::encode($provider->errors));
         }
         unset($data['provider']);
-        $user = new User($data);
+        $user = new User($data['user']);
         $user->provider_id = $provider->id;
         if (!$user->save()) {
             throw new \Exception(Json::encode($user->errors));

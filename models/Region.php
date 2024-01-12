@@ -76,4 +76,9 @@ class Region extends \yii\db\ActiveRecord
     {
         return $this->hasMany(Commune::class, ['region_id' => 'id']);
     }
+
+    public function extraFields()
+    {
+        return ArrayHelper::merge(parent::extraFields(), ['communes']);
+    }
 }

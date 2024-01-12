@@ -25,27 +25,4 @@ class SafeController extends ActiveController
             ]
         ], parent::behaviors());
     }
-
-
-    protected function verbs()
-    {
-        return [
-            'index' => ['GET', 'HEAD'],
-            'view' => ['GET', 'HEAD'],
-            'create' => ['POST'],
-            'update' => ['PUT', 'PATCH'],
-            'delete' => ['DELETE'],
-        ];
-    }
-
-    public function beforeAction($action)
-    {
-        if (Yii::$app->getRequest()->getMethod() === 'OPTIONS') {
-            Yii::debug('is options');
-            Yii::$app->getResponse()->getHeaders()->set('Allow', 'POST GET PUT');
-            Yii::$app->end();
-            return;
-        }
-        return parent::beforeAction($action);
-    }
 }

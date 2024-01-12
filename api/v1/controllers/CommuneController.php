@@ -5,6 +5,7 @@ namespace app\api\v1\controllers;
 
 
 use app\models\Commune;
+use yii\data\ActiveDataProvider;
 use yii\filters\auth\HttpBearerAuth;
 use yii\filters\Cors;
 use yii\helpers\ArrayHelper;
@@ -23,28 +24,6 @@ class CommuneController extends ActiveController
         ], parent::behaviors());
     }
 
-
-    protected function verbs()
-    {
-        return [
-            'index' => ['GET', 'HEAD'],
-            'view' => ['GET', 'HEAD'],
-            'create' => ['POST'],
-            'update' => ['PUT', 'PATCH'],
-            'delete' => ['DELETE'],
-        ];
-    }
-
-    public function beforeAction($action)
-    {
-        if (Yii::$app->getRequest()->getMethod() === 'OPTIONS') {
-            Yii::debug('is options');
-            Yii::$app->getResponse()->getHeaders()->set('Allow', 'POST GET PUT');
-            Yii::$app->end();
-            return;
-        }
-        return parent::beforeAction($action);
-    }
     public function actions()
     {
         $actions = parent::actions();
@@ -52,6 +31,14 @@ class CommuneController extends ActiveController
         unset($actions['create']);
 
         return $actions;
+    }
+
+    public function actionRegion(int $regionId)
+    {
+        $ad =  new ActiveDataProvider([
+            'query' => Commune::find()->where(['region_id' => $regionId, 'state' => 1])
+        ]);
+        return $ad->getModels();
     }
 
     public function actionCreate($region_id)
