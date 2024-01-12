@@ -189,6 +189,16 @@ class QuotesService
         return ArrayHelper::toArray($order->quotes);
     }
 
+    public function cancelPayment($paymentId)
+    {
+        $this->quoteModel::updateAll([
+            'paymentId' => null,
+            'state' => StateOrderEnum::PENDING
+        ],[
+           'paymentId'=> $paymentId
+        ]);
+    }
+
     private function getEmailByTransactionId(int $transactionId)
     {
         $order = $this->orderModel::find()
