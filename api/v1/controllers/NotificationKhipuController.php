@@ -34,4 +34,11 @@ class NotificationKhipuController extends ActiveController
 
         return [];
     }
+
+    public function actionCancelPayment($payment_id)
+    {
+        $this->quotesService->cancelPayment($payment_id);
+        return $this->redirect('https://portal.payday.cl/#/portal/buy/my-buys');
+
+    }
 }
