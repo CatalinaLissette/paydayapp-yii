@@ -39,7 +39,10 @@ class ProviderService
         if (!$user) throw new NotFoundHttpException();
         unset($user->hash, $user->id, $user->provider->id);
         return [
-            'provider' => $user->provider,
+            'id' => $user->uuid,
+            'createdAt' => $user->provider->createdAt,
+            'updatedAt' => $user->provider->updatedAt,
+            'state' => $user->provider->state,
             'user' => $user
         ];
     }
