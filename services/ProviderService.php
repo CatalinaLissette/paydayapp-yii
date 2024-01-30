@@ -28,12 +28,12 @@ class ProviderService
         $provider = $this->model::findOne($provider_id);
         if (!$provider) throw new NotFoundHttpException();
         return ProviderHasCommerce::find()
-            ->where([ProviderHasCommerce::tableName().'.provider_id' => $provider_id])
+            ->where([ProviderHasCommerce::tableName() . '.provider_id' => $provider_id])
             ->joinWith(['commerce', 'commerce.user', 'provider', 'provider.user'])
             ->asArray(true)->all();
     }
 
-    public function findByUuid(string $uuid)
+    public function findByUuid(string $uuid): array
     {
         $user = User::findOne(['uuid' => $uuid]);
         if (!$user) throw new NotFoundHttpException();
