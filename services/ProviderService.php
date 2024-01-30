@@ -43,6 +43,7 @@ class ProviderService
             'createdAt' => $user->provider->createdAt,
             'updatedAt' => $user->provider->updatedAt,
             'state' => $user->provider->state,
+            'regionId' => $user->commune->region_id,
             'user' => $user
         ];
     }
