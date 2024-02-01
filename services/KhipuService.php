@@ -4,6 +4,8 @@
 namespace app\services;
 
 use app\models\KhipuAccount;
+use app\models\Provider;
+use app\models\User;
 use DateInterval;
 use DateTime;
 use Khipu\ApiException;
@@ -115,6 +117,32 @@ class KhipuService
     public function getReceiverById(int $receiverId)
     {
         return $this->model::findOne(['receiver_id' =>$receiverId]);
+
+    }
+
+    public function searchAll()
+    {
+        $khipuAccounts = $this->model::find()->all();
+        $khipu = [];
+        foreach($khipuAccounts as $item){
+
+            $provider = User::findOne([
+                'provider_id' => $item['provider_id']
+            ]);
+            $khipu[] = [
+                "key" => $item['key'],
+                "id" => $item['id'],
+                "receiver_id" => $item['receiver_id'],
+                "provider_id" => $item['provider_id'],
+                "reference_id" => $item['reference_id'],
+                "createdAt" => $item['createdAt'],
+                "updatedAt" => $item['updatedAt'],
+                "provider_name" => $provider->name
+            ];
+
+        }
+
+        return $khipu;
 
     }
 

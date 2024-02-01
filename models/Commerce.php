@@ -120,5 +120,10 @@ class Commerce extends \yii\db\ActiveRecord
             ]
         ]);
     }
+    public function extraFields()
+    {
+        return ['user'];
+    }
 
 }
+
