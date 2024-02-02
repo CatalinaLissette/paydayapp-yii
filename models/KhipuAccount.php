@@ -80,4 +80,8 @@ class KhipuAccount extends \yii\db\ActiveRecord
     {
         return $this->hasOne(Provider::class, ['id' => 'provider_id']);
     }
+    public function extraFields()
+    {
+        return ['provider'];
+    }
 }
