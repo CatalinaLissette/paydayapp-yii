@@ -45,7 +45,7 @@ class ProviderController extends SafeController
         $user = User::findOne(['uuid' => $uuid]);
         if (!$user) throw new NotFoundHttpException();
         if ($user->load(['User' => $this->request->post('user')])) {
-            $user->save();
+            $user->save(false);
             $user->provider->updatedAt = new Expression('NOW()');
             return $user->provider->save();
         }
