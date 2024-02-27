@@ -75,6 +75,9 @@ $config = [
                 ],
             ],
         ],
+        'httpclient' => [
+            'class' => 'yii\httpclient\Client',
+        ],
         'db' => $db,
         'urlManager' => [
             'enablePrettyUrl' => true,
@@ -115,6 +118,11 @@ $config = [
                 'PUT v1/commerce/enroll' => 'v1/commerce/update-enrollment',
                 'PUT v1/commerce/credit' => 'v1/commerce/update-credit',
                 'GET,OPTIONS v1/commerce/<user_id:[\w-]{36}>/provider/<provider_id:\d+>' => 'v1/commerce/provider-commerce',
+                'POST v1/getnet/subscription' => 'v1/get-net-click/create-subscription',
+                'POST v1/getnet/subscription/<request_id:>' => 'v1/get-net-click/get-request-information',
+                'POST v1/getnet/collect' => 'v1/get-net-click/collect',
+                'GET v1/surcharge/search' => 'v1/surcharge/view',
+                'PUT v1/surcharge/update/<id:\d+>' => 'v1/surcharge/update',
             ],
         ],
 
