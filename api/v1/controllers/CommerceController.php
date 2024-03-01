@@ -90,7 +90,7 @@ class CommerceController extends SafeController
     {
         $users = ProviderHasCommerce::findAll(['commerce_id' => $commerce_id]);
         $providers = [];
-        if(!$users) return "";
+        if(!$users) return [];
         foreach ( $users as $user) {
             $providerId =$user->provider_id;
             $data = Provider::find()->where(
