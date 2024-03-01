@@ -50,7 +50,6 @@ class ProviderController extends SafeController
             return $user->provider->save();
         }
         throw new BadRequestHttpException();
-
     }
 
     public function actionCommerces(string $user_id)
