@@ -66,6 +66,7 @@ class CommerceService
         $relation = ProviderHasCommerce::findOne(['commerce_id' => $commerce_id, 'provider_id' => $provider_id]);
         if (!$relation) throw new NotFoundHttpException();
         $relation->credit = $credit;
+        $relation->state = StateEnum::ACTIVE;
         return $relation->save();
     }
 
