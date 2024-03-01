@@ -106,6 +106,7 @@ class ProviderHasCommerce extends \yii\db\ActiveRecord
         $model->state = self::STATE_PENDING;
         return $model;
     }
+
     public static function validateState(int $state)
     {
         if (!in_array($state, [self::STATE_APPROBED, self::STATE_PENDING])) {

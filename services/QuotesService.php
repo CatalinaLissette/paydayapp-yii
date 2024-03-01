@@ -136,6 +136,7 @@ class QuotesService
 
         if($payments['status'] == 'done' && intval($amountFromdb) == intval($payments['amount'])){
             $this->setPaymentState($transactionId,$payments['payment_id'], StateOrderEnum::PAYED, true);
+            $this->validateAllPaymentOrder($transactionId);
         }else{
             $this->setPaymentState($transactionId,$payments['payment_id'], StateOrderEnum::PENDING, false);
             throw new Exception('el pago no ha sido verificado');
@@ -172,6 +173,24 @@ class QuotesService
                 $quote->save();
             }
 
+        }
+
+    }
+    private function validateAllPaymentOrder(int $id)
+    {
+        $order = $this->orderModel::findOne($id);
+        if (!$order)
+            throw new Exception('no se encontro la orden');
+        $quotes = $order->quotes;
+        $cantQuotes = count($quotes);
+        $quotesPayed = 0;
+        foreach ($quotes as $quote){
+            if($quote->state == StateOrderEnum::PAYED){
+                $quotesPayed = $quotesPayed + 1;
+            }
+        }
+        if($cantQuotes == $quotesPayed){
+            $order->state = StateOrderEnum::PAYED;
         }
 
     }
