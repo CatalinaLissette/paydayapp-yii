@@ -5,6 +5,7 @@ namespace app\api\v1\controllers;
 
 
 use app\models\Commerce;
+use app\models\Provider;
 use app\models\ProviderHasCommerce;
 use app\models\User;
 use app\services\CommerceService;
@@ -85,4 +86,37 @@ class CommerceController extends SafeController
         $providerCommerce = $this->commerceService->findProviderCommerce($user->commerce_id, $provider_id);
         return $providerCommerce;
     }
+    public function actionEnrollmentByCommerce(string $commerce_id)
+    {
+        $users = ProviderHasCommerce::findAll(['commerce_id' => $commerce_id]);
+        $providers = [];
+        if(!$users) return [];
+        foreach ( $users as $user) {
+            $providerId =$user->provider_id;
+            $data = Provider::find()->where(
+                ['provider_id' => $providerId]
+            )->joinWith('user')->one();
+            $providers[] = [
+                'provider_id' => $user->provider_id,
+                'createdAt' => $user->createdAt,
+                'updatedAt' => $user->updatedAt,
+                'state' => $user->state,
+                'commerce_id' => $user->commerce_id,
+                'credit' => $user->credit,
+                'provider_name' => $data['user']->name,
+            ];
+        }
+
+
+
+        $this->response->format = Response::FORMAT_JSON;
+        return $providers;
+    }
+
+    public function actionDisable($commerce_id){
+
+        return $this->commerceService->disable($commerce_id);
+
+    }
+
 }

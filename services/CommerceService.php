@@ -4,10 +4,15 @@
 namespace app\services;
 
 
+use app\enums\StateEnum;
+use app\enums\StateOrderEnum;
 use app\models\Commerce;
+use app\models\Order;
 use app\models\Provider;
 use app\models\ProviderHasCommerce;
+use app\models\User;
 use yii\data\ActiveDataProvider;
+use yii\db\Exception;
 use yii\web\NotFoundHttpException;
 
 class CommerceService
@@ -61,6 +66,7 @@ class CommerceService
         $relation = ProviderHasCommerce::findOne(['commerce_id' => $commerce_id, 'provider_id' => $provider_id]);
         if (!$relation) throw new NotFoundHttpException();
         $relation->credit = $credit;
+        $relation->state = StateEnum::ACTIVE;
         return $relation->save();
     }
 
@@ -70,4 +76,31 @@ class CommerceService
         if (!$commerce) throw new NotFoundHttpException();
         return ProviderHasCommerce::findOne(['commerce_id' => $commerce_id, 'provider_id' => $provider_id]);
     }
+
+    public function disable($commerce_id)
+    {
+        $enrolllements = ProviderHasCommerce::findOne(['commerce_id' => $commerce_id]);
+        $orders = Order::findAll(['commerce_id' => $commerce_id, 'state' => StateOrderEnum::PENDING]);
+        $this->ensuredOrders($orders);
+        $commerce = $this->model::findOne($commerce_id);
+        $this->ensuredEnrollements($enrolllements);
+        $commerce->state = StateEnum::DISABLED;
+        return $commerce->update();
+    }
+
+    private function ensuredEnrollements(?ProviderHasCommerce $enrolllements)
+    {
+        if($enrolllements){
+            throw new Exception('no se puede eliminar porque hay enrolamientos');
+        }
+    }
+
+    private function ensuredOrders(array $orders)
+    {
+        if($orders){
+            throw new Exception('no se puede eliminar porque hay ordenes activas de pago');
+        }
+    }
+
+
 }
