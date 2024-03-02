@@ -83,7 +83,23 @@ class GetNetClickController extends SafeController
         ];
 
     }
+    public function actionInvalidate()
+    {
+        $data = $this->request->post();
+        $login = $data['auth']['login'];
+        $secretKey = $data['auth']['secretKey'];
+        $instrument = $data['instrument'];
 
+        list($expirationDate, $auth) = $this->generateLogin($secretKey, $login);
+        $data = [
+            'auth' => $auth,
+            'instrument' => $instrument
+        ];
+        return  [
+            'response' => $this->getNetClickService->invalidate($data)
+        ];
+
+    }
 
     /**
      * @param $secretKey
