@@ -121,6 +121,7 @@ $config = [
                 'POST v1/getnet/subscription' => 'v1/get-net-click/create-subscription',
                 'POST v1/getnet/subscription/<request_id:>' => 'v1/get-net-click/get-request-information',
                 'POST v1/getnet/collect' => 'v1/get-net-click/collect',
+                'POST v1/getnet/invalidate' => 'v1/get-net-click/invalidate',
                 'GET v1/surcharge/search' => 'v1/surcharge/view',
                 'PUT v1/surcharge/update/<id:\d+>' => 'v1/surcharge/update',
                 'POST v1/user/change-password' => 'v1/user/change-password',

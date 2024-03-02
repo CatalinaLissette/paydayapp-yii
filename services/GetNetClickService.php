@@ -44,4 +44,15 @@ class GetNetClickService
         );
         return $response->data;
     }
+
+    public function invalidate(array $data)
+    {
+
+        $response =  $this->httpService->request(
+            'POST',
+            "https://checkout.test.getnet.cl/api/instrument/invalidate",
+            $data
+        );
+        return $response->data;
+    }
 }
