@@ -1,10 +1,14 @@
 <?php
+
 namespace app\services;
 
 use app\models\Commerce;
 use app\models\Provider;
 use app\models\User;
+use yii\db\ActiveQuery;
 use yii\helpers\Json;
+use yii\web\BadRequestHttpException;
+use yii\web\NotFoundHttpException;
 
 class UserService
 {
@@ -71,5 +75,24 @@ class UserService
     public function findByUuid(int $user_id): ?User
     {
         return $this->model::findOne(['uuid' => $user_id, 'state' => User::STATUS_ACTIVE]);
+    }
+
+    public function changePassword(int $id, array $post)
+    {
+        try {
+            $user = $this->model::findOne($id);
+            if (!$user) throw new BadRequestHttpException('Error al cambiar contraseña');
+            $user->password = $post['password'];
+            $user->rePassword = $post['rePassword'];
+            $user->validatePasswordEq();
+            $user->save(false);
+        } catch (\Exception $e) {
+            throw new BadRequestHttpException($e->getMessage());
+        }
+    }
+
+    public function test()
+    {
+        $user = User::find()->one();
     }
 }

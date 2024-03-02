@@ -4,6 +4,7 @@
 namespace app\api\v1\controllers;
 
 
+use sizeg\jwt\JwtHttpBearerAuth;
 use Yii;
 use yii\filters\auth\HttpBearerAuth;
 use yii\filters\Cors;
@@ -16,13 +17,13 @@ class SafeController extends ActiveController
 {
     public function behaviors()
     {
-        return ArrayHelper::merge([
+        return ArrayHelper::merge(parent::behaviors(), [
             'cors' => [
                 'class' => Cors::class
             ],
             'authenticator' => [
-                'class' => HttpBearerAuth::class,
+                'class' => JwtHttpBearerAuth::class
             ]
-        ], parent::behaviors());
+        ]);
     }
 }

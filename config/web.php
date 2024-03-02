@@ -13,7 +13,7 @@ $config = [
     'language' => 'es',
     'aliases' => [
         '@bower' => '@vendor/bower-asset',
-        '@npm'   => '@vendor/npm-asset',
+        '@npm' => '@vendor/npm-asset',
     ],
     'modules' => [
         'v1' => [
@@ -33,7 +33,7 @@ $config = [
         'jwt' => [
             'class' => Jwt::class,
             'key' => 'lqNCkvEXt__5jLmIkUk6AUnRLj4K_qk8',
-            'jwtValidationData' => JwtValidationData::class
+            'jwtValidationData' => \app\components\jwt\JwtValidationData::class,
         ],
         'request' => [
             'parsers' => [
@@ -123,7 +123,9 @@ $config = [
                 'POST v1/getnet/collect' => 'v1/get-net-click/collect',
                 'GET v1/surcharge/search' => 'v1/surcharge/view',
                 'PUT v1/surcharge/update/<id:\d+>' => 'v1/surcharge/update',
+                'POST v1/user/change-password' => 'v1/user/change-password',
                 'PUT v1/commerce/<commerce_id:\d+>/disable' => 'v1/commerce/disable',
+
             ],
         ],
 
