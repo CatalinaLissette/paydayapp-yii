@@ -26,6 +26,13 @@ class ProviderHasCommerce extends \yii\db\ActiveRecord
     const STATE_APPROVED = 1;
     const STATE_PENDING = 2;
 
+    public static function validateState($state)
+    {
+        if (!in_array($state, [self::STATE_APPROVED, self::STATE_PENDING])) {
+            throw new \Exception('invalid state');
+        }
+    }
+
     public function behaviors()
     {
         return ArrayHelper::merge([
