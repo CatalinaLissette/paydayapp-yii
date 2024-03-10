@@ -34,32 +34,14 @@ class UserService
 
     private function createProvider(array $data)
     {
-        $provider = new Provider($data['provider']);
-        if (!$provider->save()) {
-            throw new \Exception(Json::encode($provider->errors));
-        }
-        unset($data['provider']);
-        $user = new User($data['user']);
-        $user->provider_id = $provider->id;
-        if (!$user->save()) {
-            $provider->delete();
-            throw new \Exception(Json::encode($user->errors));
-        }
+        User::createProvider($data['user']);
     }
 
     private function createCommerce(array $data)
     {
-        $commerce = new Commerce($data['commerce']);
-        if (!$commerce->save()) {
-            throw new \Exception(Json::encode($commerce->errors));
-        }
+        $data['businessType'] = $data['commerce']['businessType'];
         unset($data['commerce']);
-        $user = new User($data);
-        $user->commerce_id = $commerce->id;
-        if (!$user->save()) {
-            $commerce->delete();
-            throw new \Exception(Json::encode($user->errors));
-        }
+        User::createCommerce($data);
     }
 
     public function findById(int $id): User

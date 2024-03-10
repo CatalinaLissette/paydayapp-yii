@@ -64,7 +64,7 @@ class AuthController extends Controller
         $post = $this->request->post();
         $user = $this->userService->findByUsername($post['username']);
         if (!$user) {
-            throw new UnauthorizedHttpException();
+            throw new UnauthorizedHttpException('user not found');
         }
         if (!$this->authService->validatePassword($user->hash, $post['password'])) {
             throw new UnauthorizedHttpException();
@@ -76,7 +76,7 @@ class AuthController extends Controller
             $this->request->getUserAgent()
         );
         return [
-            'token' => (string) $token
+            'token' => (string)$token
         ];
     }
 
