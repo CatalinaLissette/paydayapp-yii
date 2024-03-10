@@ -62,8 +62,7 @@ class CommerceController extends SafeController
         $this->commerceService->updateEnrollmentState(
             $this->request->getBodyParams()
         );
-        $this->response->setStatusCode(201);
-        return ['updated' => true];
+        $this->returnEmptyBody(201);
     }
 
     public function actionUpdateCredit()
