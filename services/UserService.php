@@ -16,11 +16,12 @@ class UserService
      * @var User
      */
     private User $model;
+    private AuthService $authService;
 
-    public function __construct(User $model)
+    public function __construct(User $model, AuthService $authService)
     {
-
         $this->model = $model;
+        $this->authService = $authService;
     }
 
     public function createUser(array $data)
@@ -64,12 +65,19 @@ class UserService
         try {
             $user = $this->model::findOne($id);
             if (!$user) throw new BadRequestHttpException('Error al cambiar contraseña');
-            $user->password = $post['password'];
-            $user->rePassword = $post['rePassword'];
-            $user->validatePasswordEq();
+            $this->checkActualPasswordValidity($user->password_hash, $post['actualPassword']);
+            $user->checkPasswordEq($post['password'], $post['rePassword']);
+            $user->password_hash = $this->authService->generatePasswordHash($post['password']);
             $user->save(false);
         } catch (\Exception $e) {
             throw new BadRequestHttpException($e->getMessage());
+        }
+    }
+
+    private function checkActualPasswordValidity($passwordHash, $passwordString): void
+    {
+        if (!$this->authService->validatePassword($passwordHash, $passwordString)) {
+            throw new \Exception('passwords dont match');
         }
     }
 

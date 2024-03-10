@@ -56,6 +56,11 @@ final class AuthService
         return Yii::$app->security->validatePassword($password, $hash);
     }
 
+    public function generatePasswordHash($password)
+    {
+        return Yii::$app->security->generatePasswordHash($password);
+    }
+
     private function saveNewToken(
         User   $user,
         string $refreshToken,
