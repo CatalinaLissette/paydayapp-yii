@@ -71,8 +71,7 @@ class CommerceController extends SafeController
         $this->commerceService->updateCredit(
             $this->request->getBodyParams()
         );
-        $this->response->setStatusCode(201);
-        return ['updated' => true];
+        $this->returnEmptyBody(201);
     }
 
     public function actionProviderCommerce(string $user_id, string $provider_id)
