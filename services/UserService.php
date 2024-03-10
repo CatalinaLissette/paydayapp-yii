@@ -34,17 +34,7 @@ class UserService
 
     private function createProvider(array $data)
     {
-        $provider = new Provider($data['provider']);
-        if (!$provider->save()) {
-            throw new \Exception(Json::encode($provider->errors));
-        }
-        unset($data['provider']);
-        $user = new User($data['user']);
-        $user->provider_id = $provider->id;
-        if (!$user->save()) {
-            $provider->delete();
-            throw new \Exception(Json::encode($user->errors));
-        }
+        User::createProvider($data['user']);
     }
 
     private function createCommerce(array $data)

@@ -21,9 +21,9 @@ class SafeController extends ActiveController
             'cors' => [
                 'class' => Cors::class
             ],
-            'authenticator' => [
-                'class' => JwtHttpBearerAuth::class
-            ]
+//            'authenticator' => [
+//                'class' => JwtHttpBearerAuth::class
+//            ]
         ]);
     }
 }

@@ -3,25 +3,18 @@
 namespace app\models;
 
 use Ramsey\Uuid\Uuid;
-use sizeg\jwt\Jwt;
 use Yii;
 use yii\behaviors\TimestampBehavior;
-use yii\db\Exception;
 use yii\db\Expression;
 use yii\helpers\ArrayHelper;
-use yii\web\BadRequestHttpException;
-use yii\web\IdentityInterface;
+use yii\helpers\Json;
 
 /**
  * This is the model class for table "user".
  *
  * @property int $id
- * @property int|null $commerce_id
- * @property int|null $provider_id
- * @property int $commune_id
  * @property string $email
- * @property string $hash
- * @property string|null $hashedRt
+ * @property string $password_hash
  * @property int $state
  * @property string $createdAt
  * @property string $updatedAt
@@ -32,31 +25,48 @@ use yii\web\IdentityInterface;
  * @property string $supervisor
  * @property string $phone
  * @property string $uuid
+ * @property int $commune_id
+ * @property string $profile
+ * @property string|null $businessType
  *
- * @property Commerce $commerce
- * @property CommerceHasPlan[] $commerceHasPlans
+ * @property User[] $commerces
  * @property Commune $commune
- * @property Pago[] $pagos
- * @property Plan[] $plans
- * @property Provider $provider
+ * @property KhipuAccount[] $khipuAccounts
+ * @property Order[] $orders
+ * @property Order[] $orders0
+ * @property PaymentInfo[] $paymentInfos
+ * @property ProviderHasCommerce[] $providerHasCommerces
+ * @property ProviderHasCommerce[] $providerHasCommerces0
+ * @property User[] $providers
  */
-class User extends \yii\db\ActiveRecord implements IdentityInterface
+class User extends \yii\db\ActiveRecord
 {
-    const STATUS_ACTIVE = 1;
-    const STATUS_INACTIVE = 2;
+    public string $password, $rePassword;
+    const PROFILE_PROVIDER = 'PROVIDER';
 
-    public string $password = "";
-    public string $rePassword = "";
-
-    public function __construct($config = [])
+    static function createProvider(array $data): User
     {
-        parent::__construct($config);
+        $user = new self($data);
+        $user->profile = User::PROFILE_PROVIDER;
+        $user->uuid = Uuid::uuid4()->toString();
+        if ($user->save()) {
+            return $user;
+        }
+        throw new \Exception(Json::encode($user->errors));
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public static function tableName()
+    {
+        return 'user';
     }
 
     public function behaviors()
     {
         return ArrayHelper::merge([
-            [
+            'timestamp' => [
                 'class' => TimestampBehavior::class,
                 'createdAtAttribute' => 'createdAt',
                 'updatedAtAttribute' => 'updatedAt',
@@ -68,26 +78,20 @@ class User extends \yii\db\ActiveRecord implements IdentityInterface
     /**
      * {@inheritdoc}
      */
-    public static function tableName()
-    {
-        return 'user';
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function rules()
     {
         return [
-            [['password', 'rePassword'], 'required'],
-            ['email', 'unique'],
-            [['commerce_id', 'provider_id', 'commune_id', 'state'], 'integer'],
-            [['commune_id', 'email', 'state', 'rut', 'name', 'businessName', 'address', 'supervisor', 'phone'], 'required'],
-            [['createdAt', 'updatedAt', 'hash', 'uuid'], 'safe'],
-            [['email', 'hashedRt', 'rut', 'name', 'businessName', 'address', 'supervisor', 'phone'], 'string', 'max' => 45],
-            [['commerce_id'], 'exist', 'skipOnError' => true, 'targetClass' => Commerce::class, 'targetAttribute' => ['commerce_id' => 'id']],
+            [['email', 'state', 'rut', 'name', 'businessName', 'address', 'supervisor', 'phone', 'uuid', 'commune_id', 'profile'], 'required'],
+            [['state', 'commune_id'], 'integer'],
+            [['createdAt', 'updatedAt'], 'safe'],
+            [['profile'], 'string'],
+            [['email', 'phone'], 'string', 'max' => 45],
+            [['password_hash'], 'string', 'max' => 64],
+            [['rut'], 'string', 'max' => 13],
+            [['name', 'businessName', 'address', 'businessType'], 'string', 'max' => 250],
+            [['supervisor'], 'string', 'max' => 150],
+            [['uuid'], 'string', 'max' => 36],
             [['commune_id'], 'exist', 'skipOnError' => true, 'targetClass' => Commune::class, 'targetAttribute' => ['commune_id' => 'id']],
-            [['provider_id'], 'exist', 'skipOnError' => true, 'targetClass' => Provider::class, 'targetAttribute' => ['provider_id' => 'id']],
         ];
     }
 
@@ -98,12 +102,8 @@ class User extends \yii\db\ActiveRecord implements IdentityInterface
     {
         return [
             'id' => 'ID',
-            'commerce_id' => 'Commerce ID',
-            'provider_id' => 'Provider ID',
-            'commune_id' => 'Commune ID',
             'email' => 'Email',
-            'hash' => 'Hash',
-            'hashedRt' => 'Hashed Rt',
+            'password_hash' => 'Password Hash',
             'state' => 'State',
             'createdAt' => 'Created At',
             'updatedAt' => 'Updated At',
@@ -113,27 +113,21 @@ class User extends \yii\db\ActiveRecord implements IdentityInterface
             'address' => 'Address',
             'supervisor' => 'Supervisor',
             'phone' => 'Phone',
+            'uuid' => 'Uuid',
+            'commune_id' => 'Commune ID',
+            'profile' => 'Profile',
+            'businessType' => 'Business Type',
         ];
     }
 
     /**
-     * Gets query for [[Commerce]].
+     * Gets query for [[Commerces]].
      *
      * @return \yii\db\ActiveQuery
      */
-    public function getCommerce()
+    public function getCommerces()
     {
-        return $this->hasOne(Commerce::class, ['id' => 'commerce_id']);
-    }
-
-    /**
-     * Gets query for [[CommerceHasPlans]].
-     *
-     * @return \yii\db\ActiveQuery
-     */
-    public function getCommerceHasPlans()
-    {
-        return $this->hasMany(CommerceHasPlan::class, ['user_id' => 'id']);
+        return $this->hasMany(User::class, ['id' => 'commerce_id'])->viaTable('provider_has_commerce', ['provider_id' => 'id']);
     }
 
     /**
@@ -147,95 +141,87 @@ class User extends \yii\db\ActiveRecord implements IdentityInterface
     }
 
     /**
-     * Gets query for [[Pagos]].
+     * Gets query for [[KhipuAccounts]].
      *
      * @return \yii\db\ActiveQuery
      */
-    public function getPagos()
+    public function getKhipuAccounts()
     {
-        return $this->hasMany(Pago::class, ['user_id' => 'id']);
+        return $this->hasMany(KhipuAccount::class, ['user_id' => 'id']);
     }
 
     /**
-     * Gets query for [[Plans]].
+     * Gets query for [[Orders]].
      *
      * @return \yii\db\ActiveQuery
      */
-    public function getPlans()
+    public function getOrders()
     {
-        return $this->hasMany(Plan::class, ['id' => 'plan_id'])->viaTable('commerce_has_plan', ['user_id' => 'id']);
+        return $this->hasMany(Order::class, ['provider_id' => 'id']);
     }
 
     /**
-     * Gets query for [[Provider]].
+     * Gets query for [[Orders0]].
      *
      * @return \yii\db\ActiveQuery
      */
-    public function getProvider()
+    public function getOrders0()
     {
-        return $this->hasOne(Provider::class, ['id' => 'provider_id']);
+        return $this->hasMany(Order::class, ['commerce_id' => 'id']);
     }
 
-    public static function findIdentity($id)
+    /**
+     * Gets query for [[PaymentInfos]].
+     *
+     * @return \yii\db\ActiveQuery
+     */
+    public function getPaymentInfos()
     {
-        return static::findOne(['id' => $id, 'state' => self::STATUS_ACTIVE]);
+        return $this->hasMany(PaymentInfo::class, ['user_id' => 'id']);
     }
 
-    public static function findIdentityByAccessToken($token, $type = null)
+    /**
+     * Gets query for [[ProviderHasCommerces]].
+     *
+     * @return \yii\db\ActiveQuery
+     */
+    public function getProviderHasCommerces()
     {
-        $token = Yii::$app->jwt->getParser()->parse((string)$token);
-
-        return static::find()
-            ->where(['uuid' => (string)$token->getClaim('uid'), 'state' => self::STATUS_ACTIVE])
-            ->one();
+        return $this->hasMany(ProviderHasCommerce::class, ['provider_id' => 'id']);
     }
 
-    public function getId()
+    /**
+     * Gets query for [[ProviderHasCommerces0]].
+     *
+     * @return \yii\db\ActiveQuery
+     */
+    public function getProviderHasCommerces0()
     {
-        return $this->id;
+        return $this->hasMany(ProviderHasCommerce::class, ['commerce_id' => 'id']);
     }
 
-    public function getAuthKey()
+    /**
+     * Gets query for [[Providers]].
+     *
+     * @return \yii\db\ActiveQuery
+     */
+    public function getProviders()
     {
-        // TODO: Implement getAuthKey() method.
+        return $this->hasMany(User::class, ['id' => 'provider_id'])->viaTable('provider_has_commerce', ['commerce_id' => 'id']);
     }
-
-    public function validateAuthKey($authKey)
-    {
-        // TODO: Implement validateAuthKey() method.
-    }
-
-    //events
 
     public function beforeSave($insert)
     {
         if ($insert) {
-            $uuid = Uuid::uuid4();
-            $this->uuid = $uuid->toString();
-            $this->hash = Yii::$app->security->generatePasswordHash(
-                $this->password
-            );
-        } else {
-            if ($this->rePassword) {
-                $this->hash = Yii::$app->security->generatePasswordHash($this->password);
-            }
+            $this->checkPasswordEq($this->password, $this->rePassword);
+            $this->password_hash = Yii::$app->security->generatePasswordHash($this->password);
         }
-        return parent::beforeSave($insert); // TODO: Change the autogenerated stub
+        return parent::beforeSave($insert);
     }
 
-    public function getUserType()
+    private function checkPasswordEq(string $password, string $rePassword)
     {
-        if ($this->provider) {
-            return 'provider';
-        } elseif ($this->commerce) {
-            return 'commerce';
-        }
-        return 'admin';
-    }
-
-    public function validatePasswordEq()
-    {
-        if ($this->password !== $this->rePassword)
-            throw new \Exception('Contraseñas no coinciden');
+        if ($password === '' || $rePassword === '' || $password !== $rePassword)
+            throw new \Exception('contraseñas no son iguales.');
     }
 }
