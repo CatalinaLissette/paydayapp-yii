@@ -236,7 +236,7 @@ class User extends \yii\db\ActiveRecord implements IdentityInterface
         return parent::beforeSave($insert);
     }
 
-    private function checkPasswordEq(string $password, string $rePassword)
+    public function checkPasswordEq(string $password, string $rePassword)
     {
         if ($password === '' || $rePassword === '' || $password !== $rePassword)
             throw new \Exception('contraseñas no son iguales.');
