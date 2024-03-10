@@ -52,7 +52,7 @@ class CommerceController extends SafeController
         $user = User::findOne(['uuid' => $user_id]);
         if (!$user) throw new NotFoundHttpException("user not found");
         $this->response->format = Response::FORMAT_JSON;
-        $providers = $this->commerceService->findProviders($user->commerce_id);
+        $providers = $this->commerceService->findProviders($user->id);
         return $providers;
     }
 

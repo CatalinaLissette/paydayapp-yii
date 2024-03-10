@@ -11,6 +11,7 @@ use app\models\ProviderHasCommerce;
 use app\models\User;
 use yii\db\Exception;
 use yii\web\NotFoundHttpException;
+use function Lambdish\Phunctional\map;
 
 class CommerceService
 {
@@ -26,11 +27,14 @@ class CommerceService
 
     public function findProviders(int $commerce_id)
     {
-        $commerce = $this->model::findOne($commerce_id);
-        if (!$commerce) throw new NotFoundHttpException();
-        return ProviderHasCommerce::find()
+        $results = ProviderHasCommerce::find()
             ->where([ProviderHasCommerce::tableName() . '.commerce_id' => $commerce_id])
-            ->joinWith(['commerce', 'commerce.user', 'provider', 'provider.user'])->asArray(true)->all();
+            ->joinWith(['provider', 'commerce'])->asArray(true)->all();
+        return map(function ($data) {
+            unset($data['provider']['password_hash']);
+            unset($data['commerce']['password_hash']);
+            return $data;
+        }, $results);
     }
 
     public function updateEnrollmentState(array $params): bool
