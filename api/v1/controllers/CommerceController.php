@@ -16,7 +16,7 @@ use yii\web\Response;
 
 class CommerceController extends SafeController
 {
-    public $modelClass = Commerce::class;
+    public $modelClass = User::class;
     /**
      * @var CommerceService
      */
@@ -31,15 +31,12 @@ class CommerceController extends SafeController
 
     public function actionEnroll()
     {
-
-        $model = ProviderHasCommerce::enroll($this->request->post());
-        $this->response->format = 'json';
-        if ($model->save()) {
-             $this->response->setStatusCode(201);
-            return ['created' => true];
+        try {
+            $this->commerceService->enroll($this->request->post());
+            $this->returnEmptyBody(201);
+        } catch (\Exception $e) {
+            throw new BadRequestHttpException($e->getMessage());
         }
-        throw new BadRequestHttpException(Json::encode($model->errors));
-        return "";
     }
 
     public function actionEnrollments()
@@ -86,13 +83,14 @@ class CommerceController extends SafeController
         $providerCommerce = $this->commerceService->findProviderCommerce($user->commerce_id, $provider_id);
         return $providerCommerce;
     }
+
     public function actionEnrollmentByCommerce(string $commerce_id)
     {
         $users = ProviderHasCommerce::findAll(['commerce_id' => $commerce_id]);
         $providers = [];
-        if(!$users) return [];
-        foreach ( $users as $user) {
-            $providerId =$user->provider_id;
+        if (!$users) return [];
+        foreach ($users as $user) {
+            $providerId = $user->provider_id;
             $data = Provider::find()->where(
                 ['provider_id' => $providerId]
             )->joinWith('user')->one();
@@ -108,12 +106,12 @@ class CommerceController extends SafeController
         }
 
 
-
         $this->response->format = Response::FORMAT_JSON;
         return $providers;
     }
 
-    public function actionDisable($commerce_id){
+    public function actionDisable($commerce_id)
+    {
 
         return $this->commerceService->disable($commerce_id);
 

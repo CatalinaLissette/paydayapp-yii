@@ -6,25 +6,22 @@ namespace app\services;
 
 use app\enums\StateEnum;
 use app\enums\StateOrderEnum;
-use app\models\Commerce;
 use app\models\Order;
-use app\models\Provider;
 use app\models\ProviderHasCommerce;
 use app\models\User;
-use yii\data\ActiveDataProvider;
 use yii\db\Exception;
 use yii\web\NotFoundHttpException;
 
 class CommerceService
 {
     /**
-     * @var Commerce
+     * @var User
      */
-    private Commerce $model;
+    private User $model;
 
     public function __construct()
     {
-        $this->model = new Commerce();
+        $this->model = new User();
     }
 
     public function findProviders(int $commerce_id)
@@ -45,7 +42,7 @@ class CommerceService
         $relation = ProviderHasCommerce::findOne(['commerce_id' => $commerce_id, 'provider_id' => $provider_id]);
         if (!$relation) throw new NotFoundHttpException();
         ProviderHasCommerce::validateState($state);
-        $relation->state =  $state;
+        $relation->state = $state;
         $relation->credit = 0;
         return $relation->save();
     }
@@ -53,7 +50,7 @@ class CommerceService
     public function enrollments(?int $status)
     {
         return ProviderHasCommerce::find()
-            ->filterWhere([ProviderHasCommerce::tableName().'.state' => $status])
+            ->filterWhere([ProviderHasCommerce::tableName() . '.state' => $status])
             ->joinWith(['commerce', 'commerce.user', 'provider', 'provider.user'])->asArray(true)->all();
     }
 
@@ -70,7 +67,7 @@ class CommerceService
         return $relation->save();
     }
 
-    public function findProviderCommerce( int $commerce_id, int $provider_id)
+    public function findProviderCommerce(int $commerce_id, int $provider_id)
     {
         $commerce = $this->model::findOne($commerce_id);
         if (!$commerce) throw new NotFoundHttpException();
@@ -90,16 +87,22 @@ class CommerceService
 
     private function ensuredEnrollements(?ProviderHasCommerce $enrolllements)
     {
-        if($enrolllements){
+        if ($enrolllements) {
             throw new Exception('no se puede eliminar porque hay enrolamientos');
         }
     }
 
     private function ensuredOrders(array $orders)
     {
-        if($orders){
+        if ($orders) {
             throw new Exception('no se puede eliminar porque hay ordenes activas de pago');
         }
+    }
+
+    public function enroll($post)
+    {
+        $model = ProviderHasCommerce::createEnrollment($post);
+        return $model;
     }
 
 
