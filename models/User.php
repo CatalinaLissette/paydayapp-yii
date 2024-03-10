@@ -8,6 +8,7 @@ use yii\behaviors\TimestampBehavior;
 use yii\db\Expression;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Json;
+use yii\web\IdentityInterface;
 
 /**
  * This is the model class for table "user".
@@ -39,11 +40,14 @@ use yii\helpers\Json;
  * @property ProviderHasCommerce[] $providerHasCommerces0
  * @property User[] $providers
  */
-class User extends \yii\db\ActiveRecord
+class User extends \yii\db\ActiveRecord implements IdentityInterface
 {
     public string $password, $rePassword;
     const PROFILE_PROVIDER = 'PROVIDER';
     const PROFILE_COMMERCE = 'COMMERCE';
+
+    const STATUS_ACTIVE = 1;
+    const STATUS_INACTIVE = 2;
 
     static function createProvider(array $data): User
     {
@@ -236,5 +240,38 @@ class User extends \yii\db\ActiveRecord
     {
         if ($password === '' || $rePassword === '' || $password !== $rePassword)
             throw new \Exception('contraseñas no son iguales.');
+    }
+
+    public static function findIdentity($id)
+    {
+        return User::findOne(['id' => $id, 'state' => self::STATUS_ACTIVE]);
+    }
+
+    public static function findIdentityByAccessToken($token, $type = null)
+    {
+        $token = Yii::$app->jwt->getParser()->parse((string)$token);
+        return static::find()
+            ->where(['uuid' => (string)$token->getClaim('uid'), 'state' => self::STATUS_ACTIVE])
+            ->one();
+    }
+
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    public function getAuthKey()
+    {
+        //TODO: implement auth key <-> remember password
+    }
+
+    public function validateAuthKey($authKey)
+    {
+        //TODO: validate auth key
+    }
+
+    public function getUserType(): string
+    {
+        return strtolower($this->profile);
     }
 }
