@@ -39,17 +39,9 @@ class UserService
 
     private function createCommerce(array $data)
     {
-        $commerce = new Commerce($data['commerce']);
-        if (!$commerce->save()) {
-            throw new \Exception(Json::encode($commerce->errors));
-        }
+        $data['businessType'] = $data['commerce']['businessType'];
         unset($data['commerce']);
-        $user = new User($data);
-        $user->commerce_id = $commerce->id;
-        if (!$user->save()) {
-            $commerce->delete();
-            throw new \Exception(Json::encode($user->errors));
-        }
+        User::createCommerce($data);
     }
 
     public function findById(int $id): User

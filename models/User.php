@@ -43,12 +43,14 @@ class User extends \yii\db\ActiveRecord
 {
     public string $password, $rePassword;
     const PROFILE_PROVIDER = 'PROVIDER';
+    const PROFILE_COMMERCE = 'COMMERCE';
 
     static function createProvider(array $data): User
     {
         $user = new self($data);
         $user->profile = User::PROFILE_PROVIDER;
         $user->uuid = Uuid::uuid4()->toString();
+
         if ($user->save()) {
             return $user;
         }
@@ -61,6 +63,17 @@ class User extends \yii\db\ActiveRecord
     public static function tableName()
     {
         return 'user';
+    }
+
+    public static function createCommerce(array $data)
+    {
+        $user = new self($data);
+        $user->profile = User::PROFILE_COMMERCE;
+        $user->uuid = Uuid::uuid4()->toString();
+        if ($user->save()) {
+            return $user;
+        }
+        throw new \Exception(Json::encode($user->errors));
     }
 
     public function behaviors()
