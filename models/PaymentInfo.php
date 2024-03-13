@@ -3,6 +3,8 @@
 namespace app\models;
 
 use Yii;
+use yii\db\Expression;
+use yii\helpers\Json;
 
 /**
  * This is the model class for table "payment_info".
@@ -24,6 +26,21 @@ class PaymentInfo extends \yii\db\ActiveRecord
     public static function tableName()
     {
         return 'payment_info';
+    }
+
+    public static function createPayment(User $user, $requestId): self
+    {
+        $instance = new self([
+            'token' => 'no-token-yet',
+            'date_register' => new Expression('NOW()'),
+            'request_id' => $requestId,
+            'state' => 1,
+            'user_id' => $user->id,
+        ]);
+        if ($instance->save()) {
+            return $instance;
+        }
+        throw new \Exception(Json::encode($instance->errors));
     }
 
     /**

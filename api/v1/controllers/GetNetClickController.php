@@ -11,8 +11,6 @@ use DateTime;
 class GetNetClickController extends SafeController
 {
     public $modelClass = KhipuAccount::class;
-    private $login = '42706f40bac8b72331210da246fa71c9';
-    private $secretKey = 'mssSX27S6aH8nqfm';
     private GetNetClickService $getNetClickService;
 
     public function __construct(
@@ -29,25 +27,14 @@ class GetNetClickController extends SafeController
 
     public function actionCreateSubscription()
     {
-        $data = $this->request->post();
-        list($expirationDate, $auth) = $this->generateLogin($this->secretKey, $this->login);
-        $data = [
-            'auth' => $auth,
-            'subscription' => [
-                'reference' => $data['subscription'][0]['reference'],
-                'description' => $data['subscription'][0]['description'],
-            ],
-            'expiration' => $expirationDate,
-            'returnUrl' => $data['returnUrl'],
-            'ipAddress' => $data['ipAddress'],
-            'userAgent' => $data['userAgent'],
-        ];
-        return  [
-            'auth' => $auth,
-            'response' => $this->getNetClickService->createSuscription($data)
-        ];
+        $user = \Yii::$app->user->identity;
+        $redirectUrl = $this->getNetClickService->createSubscription(
+            $user, $this->request->remoteIP, $this->request->userAgent
+        );
 
+        return $this->redirect($redirectUrl);
     }
+
     public function actionGetRequestInformation($request_id)
     {
         $data = $this->request->post();
@@ -55,12 +42,13 @@ class GetNetClickController extends SafeController
         $data = [
             'auth' => $auth
         ];
-        return  [
+        return [
             'auth' => $auth,
-            'response' => $this->getNetClickService->getRequestInformation($data,$request_id)
+            'response' => $this->getNetClickService->getRequestInformation($data, $request_id)
         ];
 
     }
+
     public function actionCollect()
     {
         $data = $this->request->post();
@@ -77,12 +65,13 @@ class GetNetClickController extends SafeController
             'payer' => $payer,
             'payment' => $payment,
         ];
-        return  [
+        return [
             'auth' => $auth,
             'response' => $this->getNetClickService->collect($data)
         ];
 
     }
+
     public function actionInvalidate()
     {
         $data = $this->request->post();
@@ -95,7 +84,7 @@ class GetNetClickController extends SafeController
             'auth' => $auth,
             'instrument' => $instrument
         ];
-        return  [
+        return [
             'response' => $this->getNetClickService->invalidate($data)
         ];
 
@@ -109,23 +98,7 @@ class GetNetClickController extends SafeController
      */
     private function generateLogin($secretKey, $login): array
     {
-        $nonce = random_int(0, PHP_INT_MAX);
-        $nonceBase64 = base64_encode($nonce);
-        $dateTime = new DateTime();
-        $expiration = new DateTime();
-        $dateTime->add(new DateInterval('PT4M'));
-        $expiration->add(new DateInterval('PT10M'));
-        $seed = $dateTime->format('c');
-        $expirationDate = $expiration->format('c');
-        $tranKeySum = $nonce . $seed . $secretKey;
-        $sha256 = hash('sha256', $tranKeySum, true);
-        $tranKey = base64_encode($sha256);
-        $auth = [
-            'login' => $login,
-            'tranKey' => $tranKey,
-            'nonce' => $nonceBase64,
-            'seed' => $seed,
-        ];
+
         return array($expirationDate, $auth);
     }
 

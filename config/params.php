@@ -10,4 +10,8 @@ return [
         'id' => '',  //a unique identifier for the JWT, typically a random string
         'expire' => 86400,
     ],
+    'getnet' => [
+        'login' => '42706f40bac8b72331210da246fa71c9',
+        'secretKey' => 'mssSX27S6aH8nqfm'
+    ]
 ];
