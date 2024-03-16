@@ -12,6 +12,9 @@ return [
     ],
     'getnet' => [
         'login' => '42706f40bac8b72331210da246fa71c9',
-        'secretKey' => 'mssSX27S6aH8nqfm'
+        'secretKey' => 'mssSX27S6aH8nqfm',
+        'success' => env("GETNET_SUCCESS"),
+        'fail' => env("GETNET_FAIL"),
+        'returnUrl' => env("GETNET_RETURN_URL")
     ]
 ];

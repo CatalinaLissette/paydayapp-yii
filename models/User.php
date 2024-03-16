@@ -274,4 +274,11 @@ class User extends \yii\db\ActiveRecord implements IdentityInterface
     {
         return strtolower($this->profile);
     }
+
+    public function getRequestId(): int
+    {
+        if (!$this->paymentInfos)
+            throw new \Exception('solicitud no encontrada');
+        return $this->paymentInfos[0]->request_id;
+    }
 }

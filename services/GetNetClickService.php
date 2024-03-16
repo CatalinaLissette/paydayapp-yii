@@ -6,9 +6,11 @@ use app\models\PaymentInfo;
 use app\models\User;
 use DateInterval;
 use DateTime;
+use yii\helpers\Json;
 
 class GetNetClickService
 {
+    const TOKEN_KEYWORD = 'token';
     private HttpService $httpService;
 
     public function __construct(
@@ -20,14 +22,16 @@ class GetNetClickService
 
     public function createSubscription(User $user, string $ip, string $userAgent): string
     {
+        $returnUrl = \Yii::$app->params['getnet']['returnUrl'];
+        $requestToken = \Yii::$app->security->generateRandomString(32);
         $data = [
             'auth' => $this->generateLogin(),
             'subscription' => [
-                'reference' => "user-$user->id",
+                'reference' => "$user->businessName",
                 'description' => "1",
             ],
             'expiration' => $this->calcKeyTimeSeed('PT10M'),
-            'returnUrl' => "http://localhost:8030/getnet/validate?request={$user->uuid}",
+            'returnUrl' => "$returnUrl?_r=$requestToken",
             'ipAddress' => $ip,
             'userAgent' => $userAgent,
         ];
@@ -40,8 +44,7 @@ class GetNetClickService
             $data
         );
         $data = $response->data;
-        $this->persistRequestId($user, $data['requestId']);
-        print_r($data['processUrl']);
+        $this->persistRequestId($user, $data['requestId'], $requestToken);
         return $data['processUrl'];
     }
 
@@ -101,8 +104,34 @@ class GetNetClickService
         return $dateTime->format('c');
     }
 
-    private function persistRequestId(User $user, $requestId)
+    private function persistRequestId(User $user, int $requestId, string $requestToken)
     {
-        PaymentInfo::createPayment($user, $requestId);
+        PaymentInfo::createPayment($user, $requestId, $requestToken);
+    }
+
+    public function processSubscription(string $requestToken)
+    {
+        $info = PaymentInfo::findRequest($requestToken);
+        $info->setToken($this->collectInfo($info->request_id));
+        $info->clearData();
+        $info->save();
+    }
+
+    private function collectInfo(string $requestId): string
+    {
+        $response = $this->httpService->request('POST', "https://checkout.test.getnet.cl/api/session/$requestId", ['auth' => $this->generateLogin()]);
+        if ($response->statusCode !== '200') throw new \Exception('error al tratar de obtener información de subscripción');
+        return $this->tokenFromDataExtractor($response->data);
+    }
+
+    private function tokenFromDataExtractor(array $data): string
+    {
+        $instruments = $data['subscription']['instrument'];
+        foreach ($instruments as $instrument) {
+            if ($instrument['keyword'] === self::TOKEN_KEYWORD) {
+                return $instrument['value'];
+            }
+        }
+        throw new \Exception('token no encontrado');
     }
 }

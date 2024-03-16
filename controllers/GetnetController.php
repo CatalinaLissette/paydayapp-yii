@@ -2,26 +2,29 @@
 
 namespace app\controllers;
 
-use app\models\User;
-use yii\web\BadRequestHttpException;
+use app\services\GetNetClickService;
 use yii\web\Controller;
 
 class GetnetController extends Controller
 {
+    private GetNetClickService $service;
+
+    public function __construct($id, $module, GetNetClickService $service, $config = [])
+    {
+        parent::__construct($id, $module, $config);
+        $this->service = $service;
+    }
+
     public function actionValidate()
     {
-        $uuid = $this->request->get('request');
-        $user = User::findOne(['uuid' => $uuid]);
-        if (!$user) throw new BadRequestHttpException('no no no!!');
-
-        $requestId = $user->paymentInfos[0]->request_id;
-        $info = $user->paymentInfos[0];
-        //TODO: metodo collect
-        $info->token = 'tokendetodofueok'; //$data['token']
-        //TODO: save token
-        $info->save(false);
-        //TODO: caso contrario
-        //throw new
-        return $this->redirect("http://localhost:9000/#/getnet?result=success");
+        try {
+            $requestToken = $this->request->get('_r');
+            if (!$requestToken) return $this->redirect(\Yii::$app->params['getnet']['fail']);
+            $this->service->processSubscription($requestToken);
+            return $this->redirect(\Yii::$app->params['getnet']['success']);
+        } catch (\Exception $e) {
+            \Yii::error($e);
+            return $this->redirect(\Yii::$app->params['getnet']['fail']);
+        }
     }
 }
