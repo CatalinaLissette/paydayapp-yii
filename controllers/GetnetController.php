@@ -21,6 +21,7 @@ class GetnetController extends Controller
     {
         parent::__construct($id, $module, $config);
         $this->service = $service;
+        $this->paymentService = $paymentService;
     }
 
     public function actionValidate()
