@@ -51,9 +51,9 @@ class PaymentInfo extends \yii\db\ActiveRecord
         if (!$info) throw new \Exception('request not found');
         return $info;
     }
-    public static function disableOther(int $userId): void
+    public static function disableOther(int $userId, string $requestToken): void
     {
-        static::updateAll(['state' => 2],['user_id' => $userId]);
+        static::updateAll(['state' => 2], ['AND', ['user_id' => $userId], ['<>', 'request_token', $requestToken]]);
 
     }
 

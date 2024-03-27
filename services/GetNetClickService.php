@@ -111,9 +111,9 @@ class GetNetClickService
     {
         $info = PaymentInfo::findRequest($requestToken);
         $info->setToken($this->collectInfo($info->request_id));
+        PaymentInfo::disableOther($info->user_id,$requestToken);
         $info->clearData();
         $info->save();
-        return $info->user_id;
     }
 
     private function collectInfo(string $requestId): string
