@@ -48,13 +48,26 @@ class PaymentInfo extends \yii\db\ActiveRecord
     public static function findRequest(string $requestToken): self
     {
         $info = static::findOne(['request_token' => $requestToken]);
-        if (!$info) throw new \Exception('request not found');
+        if (!$info) throw new \Exception('does not have a payment method');
         return $info;
     }
     public static function disableOther(int $userId, string $requestToken): void
     {
         static::updateAll(['state' => 2], ['AND', ['user_id' => $userId], ['<>', 'request_token', $requestToken]]);
 
+    }
+
+    public static function disable(int $userId): void
+    {
+        static::updateAll(['state' => 2],['user_id' => $userId]);
+
+    }
+
+    public static function findActiveByUserId(int $userId): self
+    {
+        $info = static::findOne(['user_id' => $userId,'state'=>1]);
+        if (!$info) throw new \Exception('request not found');
+        return $info;
     }
 
     /**

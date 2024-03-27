@@ -46,9 +46,12 @@ class GetNetClickService
         return $data['processUrl'];
     }
 
-    public function getRequestInformation(array $data, string $requestId)
+    public function getRequestInformation(string $requestId)
     {
+        $data = [
+            'auth' => $this->generateLogin(),
 
+        ];
         $response = $this->httpService->request(
             'POST',
             "https://checkout.test.getnet.cl/api/session/" . $requestId,
@@ -68,14 +71,24 @@ class GetNetClickService
         return $response->data;
     }
 
-    public function invalidate(array $data)
+    public function invalidate(?User $user)
     {
-
+        $info = PaymentInfo::findActiveByUserId($user->id);
+        $token = $info['token'];
+        $data = [
+            'auth' => $this->generateLogin(),
+            'instrument' => [
+                'token' => [
+                    'token' => $token
+                ],
+            ],
+        ];
         $response = $this->httpService->request(
             'POST',
             "https://checkout.test.getnet.cl/api/instrument/invalidate",
             $data
         );
+        PaymentInfo::disable($user->id);
         return $response->data;
     }
 
@@ -136,8 +149,8 @@ class GetNetClickService
 
     public function generatePay(?User $user,array $params)
     {
-        print_r($user);
-        $token = '';
+        $info = PaymentInfo::findActiveByUserId($user->id);
+        $token = $info['token'];
         $amount = $params['amount'];
         $reference = $params['reference'];
         $data = [
@@ -149,11 +162,12 @@ class GetNetClickService
                 'locale' => 'es_CL'
             ],
             'payer' =>[
-                'document' =>  '11.222.333-9',
+                'document' =>  $user->rut,
                 'documentType' => 'CLRUT',
-                'name' => 'Prueba aliado',
-                'surname' => 'JA',
-                'email' => 'rojaixz@gmail.com'
+                'name' => $user->businessName,
+                'surname' => '',
+              //  'email' => $user->email
+                'email' => 'rojaixz@hotmail.com'
                 ],
             'payment' =>[
                 'reference' => $reference,
@@ -164,6 +178,6 @@ class GetNetClickService
                 ],
             ],
         ];
-
+        return $this->collect($data);
     }
 }

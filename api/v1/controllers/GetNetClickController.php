@@ -37,14 +37,9 @@ class GetNetClickController extends SafeController
 
     public function actionGetRequestInformation($request_id)
     {
-        $data = $this->request->post();
-        list($expirationDate, $auth) = $this->generateLogin($this->secretKey, $this->login);
-        $data = [
-            'auth' => $auth
-        ];
+
         return [
-            'auth' => $auth,
-            'response' => $this->getNetClickService->getRequestInformation($data, $request_id)
+            'response' => $this->getNetClickService->getRequestInformation( $request_id)
         ];
 
     }
@@ -54,24 +49,16 @@ class GetNetClickController extends SafeController
         $user = \Yii::$app->user->identity;
         $data = $this->request->post();
         $response = $this->getNetClickService->generatePay($user,$data);
-        return $response;
+        $resp = $this->getNetClickService->getRequestInformation($response['requestId']);
+        return $resp['payment'][0]['status'];
 
     }
 
     public function actionInvalidate()
     {
-        $data = $this->request->post();
-        $login = $data['auth']['login'];
-        $secretKey = $data['auth']['secretKey'];
-        $instrument = $data['instrument'];
-
-        list($expirationDate, $auth) = $this->generateLogin($secretKey, $login);
-        $data = [
-            'auth' => $auth,
-            'instrument' => $instrument
-        ];
+        $user = \Yii::$app->user->identity;
         return [
-            'response' => $this->getNetClickService->invalidate($data)
+            'response' => $this->getNetClickService->invalidate($user)
         ];
 
     }
