@@ -51,24 +51,10 @@ class GetNetClickController extends SafeController
 
     public function actionCollect()
     {
+        $user = \Yii::$app->user->identity;
         $data = $this->request->post();
-        $login = $data['auth']['login'];
-        $secretKey = $data['auth']['secretKey'];
-        $instrument = $data['instrument'];
-        $payer = $data['payer'];
-        $payment = $data['payment'];
-
-        list($expirationDate, $auth) = $this->generateLogin($secretKey, $login);
-        $data = [
-            'auth' => $auth,
-            'instrument' => $instrument,
-            'payer' => $payer,
-            'payment' => $payment,
-        ];
-        return [
-            'auth' => $auth,
-            'response' => $this->getNetClickService->collect($data)
-        ];
+        $response = $this->getNetClickService->generatePay($user,$data);
+        return $response;
 
     }
 

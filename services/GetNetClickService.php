@@ -36,8 +36,6 @@ class GetNetClickService
             'userAgent' => $userAgent,
         ];
 
-        //var_dump($data);
-
         $response = $this->httpService->request(
             'POST',
             'https://checkout.test.getnet.cl/api/session/',
@@ -115,6 +113,7 @@ class GetNetClickService
         $info->setToken($this->collectInfo($info->request_id));
         $info->clearData();
         $info->save();
+        return $info->user_id;
     }
 
     private function collectInfo(string $requestId): string
@@ -133,5 +132,38 @@ class GetNetClickService
             }
         }
         throw new \Exception('token no encontrado');
+    }
+
+    public function generatePay(?User $user,array $params)
+    {
+        print_r($user);
+        $token = '';
+        $amount = $params['amount'];
+        $reference = $params['reference'];
+        $data = [
+            'auth' => $this->generateLogin(),
+            'instrument' => [
+                'token' => [
+                    'token' => $token
+                ],
+                'locale' => 'es_CL'
+            ],
+            'payer' =>[
+                'document' =>  '11.222.333-9',
+                'documentType' => 'CLRUT',
+                'name' => 'Prueba aliado',
+                'surname' => 'JA',
+                'email' => 'rojaixz@gmail.com'
+                ],
+            'payment' =>[
+                'reference' => $reference,
+                'description' => 'Pago de cuota',
+                'amount' => [
+                    'currency' => 'CLP',
+                    'total' => $amount,
+                ],
+            ],
+        ];
+
     }
 }
