@@ -176,6 +176,7 @@ class QuotesService
         }
 
     }
+
     private function validateAllPaymentOrder(int $id)
     {
         $order = $this->orderModel::findOne($id);
@@ -217,6 +218,11 @@ class QuotesService
         ],[
            'paymentId'=> $quote->paymentId
         ]);
+    }
+
+    public function setPaymentByGetNet(array $data,string $requestId)
+    {
+        print_r($data);
     }
 
     private function getEmailByTransactionId(int $transactionId)

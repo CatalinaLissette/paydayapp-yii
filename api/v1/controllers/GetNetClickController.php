@@ -4,6 +4,7 @@ namespace app\api\v1\controllers;
 
 use app\models\KhipuAccount;
 use app\services\GetNetClickService;
+use app\services\QuotesService;
 use DateInterval;
 use DateTime;
 
@@ -12,16 +13,20 @@ class GetNetClickController extends SafeController
 {
     public $modelClass = KhipuAccount::class;
     private GetNetClickService $getNetClickService;
+    private QuotesService $quotesService;
 
     public function __construct(
         $id,
         $module,
         $config = [],
-        GetNetClickService $getNetClickService
+        GetNetClickService $getNetClickService,
+        QuotesService $quotesService
     )
     {
         parent::__construct($id, $module, $config);
         $this->getNetClickService = $getNetClickService;
+        $this->quotesService = $quotesService;
+
     }
 
 
@@ -50,6 +55,7 @@ class GetNetClickController extends SafeController
         $data = $this->request->post();
         $response = $this->getNetClickService->generatePay($user,$data);
         $resp = $this->getNetClickService->getRequestInformation($response['requestId']);
+        $this->quotesService->setPaymentByGetNet($data,$resp['requestId']);
         return $resp['payment'][0]['status'];
 
     }
