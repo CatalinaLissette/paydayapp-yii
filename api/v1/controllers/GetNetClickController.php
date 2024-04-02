@@ -7,6 +7,7 @@ use app\services\GetNetClickService;
 use app\services\QuotesService;
 use DateInterval;
 use DateTime;
+use yii\db\Exception;
 
 
 class GetNetClickController extends SafeController
@@ -53,6 +54,7 @@ class GetNetClickController extends SafeController
     {
         $user = \Yii::$app->user->identity;
         $data = $this->request->post();
+        $this->quotesService->validatePayment($data['orderDetail']);
         $response = $this->getNetClickService->generatePay($user,$data);
         $resp = $this->getNetClickService->getRequestInformation($response['requestId']);
         $this->quotesService->setPaymentByGetNet($data,$resp['requestId']);

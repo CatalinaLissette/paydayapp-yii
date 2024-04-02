@@ -19,8 +19,8 @@ use yii\helpers\ArrayHelper;
  * @property int $totalAmount
  * @property string|null $observation
  *
- * @property Commerce $commerce
- * @property Provider $provider
+ * @property User $commerce
+ * @property User $provider
  * @property Quote[] $quotes
  */
 class Order extends \yii\db\ActiveRecord
@@ -43,8 +43,8 @@ class Order extends \yii\db\ActiveRecord
             [['provider_id', 'commerce_id', 'state', 'totalAmount'], 'integer'],
             [['createdAt', 'updatedAt'], 'safe'],
             [['observation'], 'string', 'max' => 45],
-            [['commerce_id'], 'exist', 'skipOnError' => true, 'targetClass' => Commerce::class, 'targetAttribute' => ['commerce_id' => 'id']],
-            [['provider_id'], 'exist', 'skipOnError' => true, 'targetClass' => Provider::class, 'targetAttribute' => ['provider_id' => 'id']],
+            [['commerce_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['commerce_id' => 'id']],
+            [['provider_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['provider_id' => 'id']],
         ];
     }
 
@@ -85,7 +85,7 @@ class Order extends \yii\db\ActiveRecord
      */
     public function getCommerce()
     {
-        return $this->hasOne(Commerce::class, ['id' => 'commerce_id']);
+        return $this->hasOne(User::class, ['id' => 'commerce_id']);
     }
 
     /**
@@ -95,7 +95,7 @@ class Order extends \yii\db\ActiveRecord
      */
     public function getProvider()
     {
-        return $this->hasOne(Provider::class, ['id' => 'provider_id']);
+        return $this->hasOne(User::class, ['id' => 'provider_id']);
     }
 
     /**

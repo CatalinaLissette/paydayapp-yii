@@ -222,7 +222,18 @@ class QuotesService
 
     public function setPaymentByGetNet(array $data,string $requestId)
     {
-        print_r($data);
+        $orderDetails = $data['orderDetail'];
+        foreach ($orderDetails as $quoteId) {
+           Quote::payment($quoteId,$requestId);
+        }
+    }
+    public function validatePayment(array $orderDetails)
+    {
+
+        foreach ($orderDetails as $quoteId) {
+             Quote::validatePayment($quoteId);
+        }
+
     }
 
     private function getEmailByTransactionId(int $transactionId)

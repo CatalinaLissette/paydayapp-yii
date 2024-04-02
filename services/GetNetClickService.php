@@ -166,8 +166,7 @@ class GetNetClickService
                 'documentType' => 'CLRUT',
                 'name' => $user->businessName,
                 'surname' => '',
-              //  'email' => $user->email
-                'email' => 'rojaixz@hotmail.com'
+                'email' => $user->email
                 ],
             'payment' =>[
                 'reference' => $reference,
