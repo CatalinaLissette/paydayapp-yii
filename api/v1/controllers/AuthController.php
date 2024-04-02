@@ -4,15 +4,11 @@
 namespace app\api\v1\controllers;
 
 
-use app\models\User;
 use app\services\AuthService;
 use app\services\UserService;
-use Yii;
 use yii\filters\Cors;
-use yii\helpers\ArrayHelper;
 use yii\rest\Controller;
 use yii\rest\OptionsAction;
-use yii\web\HttpException;
 use yii\web\UnauthorizedHttpException;
 
 class AuthController extends Controller
@@ -64,9 +60,9 @@ class AuthController extends Controller
         $post = $this->request->post();
         $user = $this->userService->findByUsername($post['username']);
         if (!$user) {
-            throw new UnauthorizedHttpException();
+            throw new UnauthorizedHttpException('user not found');
         }
-        if (!$this->authService->validatePassword($user->hash, $post['password'])) {
+        if (!$this->authService->validatePassword($user->password_hash, $post['password'])) {
             throw new UnauthorizedHttpException();
         }
         $token = $this->authService->generateAuthToken($user);
@@ -76,7 +72,7 @@ class AuthController extends Controller
             $this->request->getUserAgent()
         );
         return [
-            'token' => (string) $token
+            'token' => (string)$token
         ];
     }
 

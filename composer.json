@@ -22,7 +22,8 @@
         "ramsey/uuid": "^4.2",
         "khipu/khipu-api-client": "^2.9",
         "yiithings/yii2-dotenv": "*",
-        "yiisoft/yii2-httpclient": "*"
+        "yiisoft/yii2-httpclient": "*",
+        "lambdish/phunctional": "^2.1"
     },
     "require-dev": {
         "yiisoft/yii2-debug": "~2.1.0",

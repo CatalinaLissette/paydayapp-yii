@@ -6,24 +6,45 @@ use Yii;
 use yii\behaviors\TimestampBehavior;
 use yii\db\Expression;
 use yii\helpers\ArrayHelper;
+use yii\helpers\Json;
 
 /**
  * This is the model class for table "provider_has_commerce".
  *
  * @property int $provider_id
- * @property string $createdAt
- * @property string $updatedAt
- * @property int $state
  * @property int $commerce_id
- * @property int|null $credit
+ * @property int $credit
+ * @property string|null $created_at
+ * @property string $updated_at
+ * @property int $state
  *
- * @property Commerce $commerce
- * @property Provider $provider
+ * @property User $commerce
+ * @property User $provider
  */
 class ProviderHasCommerce extends \yii\db\ActiveRecord
 {
-    CONST STATE_APPROBED = 1;
-    CONST STATE_PENDING = 2;
+    const STATE_APPROVED = 1;
+    const STATE_PENDING = 2;
+
+    public static function validateState($state)
+    {
+        if (!in_array($state, [self::STATE_APPROVED, self::STATE_PENDING])) {
+            throw new \Exception('invalid state');
+        }
+    }
+
+    public function behaviors()
+    {
+        return ArrayHelper::merge([
+            'timestamp' => [
+                'class' => TimestampBehavior::class,
+                'createdAtAttribute' => 'created_at',
+                'updatedAtAttribute' => 'updated_at',
+                'value' => new Expression('NOW()')
+            ]
+        ], parent::behaviors());
+    }
+
     /**
      * {@inheritdoc}
      */
@@ -32,6 +53,17 @@ class ProviderHasCommerce extends \yii\db\ActiveRecord
         return 'provider_has_commerce';
     }
 
+    public static function createEnrollment(array $post): self
+    {
+        $model = new self();
+        $model->credit = 0;
+        $model->state = self::STATE_PENDING;
+        $model->load(['ProviderHasCommerce' => $post]);
+        if ($model->save()) {
+            return $model;
+        }
+        throw new \Exception(Json::encode($model->errors));
+    }
 
     /**
      * {@inheritdoc}
@@ -39,12 +71,12 @@ class ProviderHasCommerce extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['provider_id', 'commerce_id', 'state','credit'], 'required'],
-            [['provider_id', 'commerce_id', 'state','credit'], 'integer'],
-            [['createdAt', 'updatedAt'], 'safe'],
+            [['provider_id', 'commerce_id', 'state'], 'required'],
+            [['provider_id', 'commerce_id', 'state', 'credit'], 'integer'],
+            [['created_at', 'updated_at'], 'safe'],
             [['provider_id', 'commerce_id'], 'unique', 'targetAttribute' => ['provider_id', 'commerce_id']],
-            [['commerce_id'], 'exist', 'skipOnError' => true, 'targetClass' => Commerce::class, 'targetAttribute' => ['commerce_id' => 'id']],
-            [['provider_id'], 'exist', 'skipOnError' => true, 'targetClass' => Provider::class, 'targetAttribute' => ['provider_id' => 'id']],
+            [['provider_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['provider_id' => 'id']],
+            [['commerce_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['commerce_id' => 'id']],
         ];
     }
 
@@ -55,11 +87,10 @@ class ProviderHasCommerce extends \yii\db\ActiveRecord
     {
         return [
             'provider_id' => 'Provider ID',
-            'createdAt' => 'Created At',
-            'updatedAt' => 'Updated At',
-            'state' => 'State',
             'commerce_id' => 'Commerce ID',
             'credit' => 'Credit',
+            'created_at' => 'Created At',
+            'state' => 'State',
         ];
     }
 
@@ -70,7 +101,7 @@ class ProviderHasCommerce extends \yii\db\ActiveRecord
      */
     public function getCommerce()
     {
-        return $this->hasOne(Commerce::class, ['id' => 'commerce_id']);
+        return $this->hasOne(User::class, ['id' => 'commerce_id']);
     }
 
     /**
@@ -80,37 +111,6 @@ class ProviderHasCommerce extends \yii\db\ActiveRecord
      */
     public function getProvider()
     {
-        return $this->hasOne(Provider::class, ['id' => 'provider_id']);
-    }
-
-
-    public function behaviors()
-    {
-        return ArrayHelper::merge(parent::behaviors(), [
-            'timestamp'=> [
-                'class'=>TimestampBehavior::class,
-                'updatedAtAttribute' => 'updatedAt',
-                'createdAtAttribute' => 'createdAt',
-                'value' => new Expression('NOW()')
-            ]
-        ]);
-    }
-
-    public static function enroll(array $post): self
-    {
-        $model = new self();
-        $model->credit = 0;
-        $model->load(['ProviderHasCommerce' => $post]);
-        $commerce = User::findOne(['uuid' => $post['commerce_id']]);
-        $model->commerce_id = $commerce->commerce_id;
-        $model->state = self::STATE_PENDING;
-        return $model;
-    }
-
-    public static function validateState(int $state)
-    {
-        if (!in_array($state, [self::STATE_APPROBED, self::STATE_PENDING])) {
-            throw new \Exception('invalid state');
-        }
+        return $this->hasOne(User::class, ['id' => 'provider_id']);
     }
 }

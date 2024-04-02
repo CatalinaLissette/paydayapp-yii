@@ -4,99 +4,69 @@ namespace app\api\v1\controllers;
 
 use app\models\KhipuAccount;
 use app\services\GetNetClickService;
+use app\services\QuotesService;
 use DateInterval;
 use DateTime;
+use yii\db\Exception;
 
 
 class GetNetClickController extends SafeController
 {
     public $modelClass = KhipuAccount::class;
-    private $login = '42706f40bac8b72331210da246fa71c9';
-    private $secretKey = 'mssSX27S6aH8nqfm';
     private GetNetClickService $getNetClickService;
+    private QuotesService $quotesService;
 
     public function __construct(
         $id,
         $module,
         $config = [],
-        GetNetClickService $getNetClickService
+        GetNetClickService $getNetClickService,
+        QuotesService $quotesService
     )
     {
         parent::__construct($id, $module, $config);
         $this->getNetClickService = $getNetClickService;
+        $this->quotesService = $quotesService;
+
     }
 
 
     public function actionCreateSubscription()
     {
-        $data = $this->request->post();
-        list($expirationDate, $auth) = $this->generateLogin($this->secretKey, $this->login);
-        $data = [
-            'auth' => $auth,
-            'subscription' => [
-                'reference' => $data['subscription'][0]['reference'],
-                'description' => $data['subscription'][0]['description'],
-            ],
-            'expiration' => $expirationDate,
-            'returnUrl' => $data['returnUrl'],
-            'ipAddress' => $data['ipAddress'],
-            'userAgent' => $data['userAgent'],
-        ];
-        return  [
-            'auth' => $auth,
-            'response' => $this->getNetClickService->createSuscription($data)
-        ];
+        $user = \Yii::$app->user->identity;
+        $redirectUrl = $this->getNetClickService->createSubscription(
+            $user, $this->request->remoteIP, $this->request->userAgent
+        );
 
+        return $this->redirect($redirectUrl);
     }
+
     public function actionGetRequestInformation($request_id)
     {
-        $data = $this->request->post();
-        list($expirationDate, $auth) = $this->generateLogin($this->secretKey, $this->login);
-        $data = [
-            'auth' => $auth
-        ];
-        return  [
-            'auth' => $auth,
-            'response' => $this->getNetClickService->getRequestInformation($data,$request_id)
+
+        return [
+            'response' => $this->getNetClickService->getRequestInformation( $request_id)
         ];
 
     }
+
     public function actionCollect()
     {
+        $user = \Yii::$app->user->identity;
         $data = $this->request->post();
-        $login = $data['auth']['login'];
-        $secretKey = $data['auth']['secretKey'];
-        $instrument = $data['instrument'];
-        $payer = $data['payer'];
-        $payment = $data['payment'];
-
-        list($expirationDate, $auth) = $this->generateLogin($secretKey, $login);
-        $data = [
-            'auth' => $auth,
-            'instrument' => $instrument,
-            'payer' => $payer,
-            'payment' => $payment,
-        ];
-        return  [
-            'auth' => $auth,
-            'response' => $this->getNetClickService->collect($data)
-        ];
+        $this->quotesService->validatePayment($data['orderDetail']);
+        $response = $this->getNetClickService->generatePay($user,$data);
+        $resp = $this->getNetClickService->getRequestInformation($response['requestId']);
+        $this->quotesService->setPaymentByGetNet($data,$resp['requestId']);
+        return $resp['payment'][0]['status'];
 
     }
+
     public function actionInvalidate()
     {
-        $data = $this->request->post();
-        $login = $data['auth']['login'];
-        $secretKey = $data['auth']['secretKey'];
-        $instrument = $data['instrument'];
-
-        list($expirationDate, $auth) = $this->generateLogin($secretKey, $login);
-        $data = [
-            'auth' => $auth,
-            'instrument' => $instrument
-        ];
-        return  [
-            'response' => $this->getNetClickService->invalidate($data)
+        $user = \Yii::$app->user->identity;
+        return [
+            'response' => $this->getNetClickService->invalidate($user)
         ];
 
     }
@@ -109,23 +79,7 @@ class GetNetClickController extends SafeController
      */
     private function generateLogin($secretKey, $login): array
     {
-        $nonce = random_int(0, PHP_INT_MAX);
-        $nonceBase64 = base64_encode($nonce);
-        $dateTime = new DateTime();
-        $expiration = new DateTime();
-        $dateTime->add(new DateInterval('PT4M'));
-        $expiration->add(new DateInterval('PT10M'));
-        $seed = $dateTime->format('c');
-        $expirationDate = $expiration->format('c');
-        $tranKeySum = $nonce . $seed . $secretKey;
-        $sha256 = hash('sha256', $tranKeySum, true);
-        $tranKey = base64_encode($sha256);
-        $auth = [
-            'login' => $login,
-            'tranKey' => $tranKey,
-            'nonce' => $nonceBase64,
-            'seed' => $seed,
-        ];
+
         return array($expirationDate, $auth);
     }
 

@@ -5,13 +5,10 @@ namespace app\api\v1\controllers;
 
 
 use sizeg\jwt\JwtHttpBearerAuth;
-use Yii;
-use yii\filters\auth\HttpBearerAuth;
 use yii\filters\Cors;
-use yii\filters\VerbFilter;
 use yii\helpers\ArrayHelper;
 use yii\rest\ActiveController;
-use yii\rest\Controller;
+use yii\web\Response;
 
 class SafeController extends ActiveController
 {
@@ -25,5 +22,12 @@ class SafeController extends ActiveController
                 'class' => JwtHttpBearerAuth::class
             ]
         ]);
+    }
+
+    protected function returnEmptyBody(int $status): void
+    {
+        $this->response->format = Response::FORMAT_JSON;
+        $this->response->content = '';
+        $this->response->setStatusCode($status);
     }
 }

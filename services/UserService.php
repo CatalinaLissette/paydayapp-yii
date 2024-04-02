@@ -16,11 +16,12 @@ class UserService
      * @var User
      */
     private User $model;
+    private AuthService $authService;
 
-    public function __construct(User $model)
+    public function __construct(User $model, AuthService $authService)
     {
-
         $this->model = $model;
+        $this->authService = $authService;
     }
 
     public function createUser(array $data)
@@ -34,32 +35,14 @@ class UserService
 
     private function createProvider(array $data)
     {
-        $provider = new Provider($data['provider']);
-        if (!$provider->save()) {
-            throw new \Exception(Json::encode($provider->errors));
-        }
-        unset($data['provider']);
-        $user = new User($data['user']);
-        $user->provider_id = $provider->id;
-        if (!$user->save()) {
-            $provider->delete();
-            throw new \Exception(Json::encode($user->errors));
-        }
+        User::createProvider($data['user']);
     }
 
     private function createCommerce(array $data)
     {
-        $commerce = new Commerce($data['commerce']);
-        if (!$commerce->save()) {
-            throw new \Exception(Json::encode($commerce->errors));
-        }
+        $data['businessType'] = $data['commerce']['businessType'];
         unset($data['commerce']);
-        $user = new User($data);
-        $user->commerce_id = $commerce->id;
-        if (!$user->save()) {
-            $commerce->delete();
-            throw new \Exception(Json::encode($user->errors));
-        }
+        User::createCommerce($data);
     }
 
     public function findById(int $id): User
@@ -82,12 +65,19 @@ class UserService
         try {
             $user = $this->model::findOne($id);
             if (!$user) throw new BadRequestHttpException('Error al cambiar contraseña');
-            $user->password = $post['password'];
-            $user->rePassword = $post['rePassword'];
-            $user->validatePasswordEq();
+            $this->checkActualPasswordValidity($user->password_hash, $post['actualPassword']);
+            $user->checkPasswordEq($post['password'], $post['rePassword']);
+            $user->password_hash = $this->authService->generatePasswordHash($post['password']);
             $user->save(false);
         } catch (\Exception $e) {
             throw new BadRequestHttpException($e->getMessage());
+        }
+    }
+
+    private function checkActualPasswordValidity($passwordHash, $passwordString): void
+    {
+        if (!$this->authService->validatePassword($passwordHash, $passwordString)) {
+            throw new \Exception('passwords dont match');
         }
     }
 

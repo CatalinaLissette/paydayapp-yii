@@ -2,8 +2,11 @@
 
 namespace app\models;
 
+use app\enums\StateEnum;
+use app\enums\StateOrderEnum;
 use Yii;
 use yii\behaviors\TimestampBehavior;
+use yii\db\Exception;
 use yii\db\Expression;
 use yii\helpers\ArrayHelper;
 
@@ -30,6 +33,24 @@ class Quote extends \yii\db\ActiveRecord
     public static function tableName()
     {
         return 'quotes';
+    }
+
+    public static function payment(int $id, string $requestId)
+    {
+        $model = Quote::findOne($id);
+        $model->state = StateOrderEnum::PAYED;
+        $model->paymentId = $requestId;
+        $model->update();
+    }
+
+    public static function validatePayment(int $id)
+    {
+        $model = Quote::findOne($id);
+        if(!$model)
+            throw new Exception('no se encuentra la cuota en el sistema');
+        if($model->state == StateOrderEnum::PAYED)
+            throw new Exception('la cuota seleccionada ya se encuentra pagada');
+
     }
 
     /**

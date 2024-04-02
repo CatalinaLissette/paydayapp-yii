@@ -6,6 +6,7 @@ namespace app\api\v1\controllers;
 
 use app\models\User;
 use app\services\UserService;
+use yii\filters\AccessControl;
 use yii\filters\Cors;
 use yii\helpers\ArrayHelper;
 use yii\web\BadRequestHttpException;
@@ -33,11 +34,19 @@ class UserController extends SafeController
 
     public function behaviors()
     {
-        return ArrayHelper::merge(parent::behaviors(), [
-            'cors' => [
-                'class' => Cors::class
-            ],
-        ]);
+        return ArrayHelper::merge([
+//            'access' => [
+//                'class' => AccessControl::class,
+//                'only' => ['create'],
+//                'rules' => [
+//                    [
+//                        'allow' => true,
+//                        'actions' => ['create'],
+//                        'roles' => ['?']
+//                    ]
+//                ]
+//            ]
+        ], parent::behaviors());
     }
 
     public function actions()
@@ -49,9 +58,6 @@ class UserController extends SafeController
 
     public function actionCreate()
     {
-        if (\Yii::$app->user->isGuest) {
-            throw new BadRequestHttpException();
-        }
         $post = $this->request->post();
         $this->userService->createUser($post);
         $this->response->setStatusCode(201);

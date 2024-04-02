@@ -34,19 +34,20 @@ final class AuthService
 
     public function generateRefreshToken(User $user, string $ip, string $userAgent): void
     {
-        $refreshToken = Yii::$app->security->generateRandomString(200);
-        $userToken = $this->saveNewToken($user, $refreshToken, $ip, $userAgent);
-        if (!$userToken) {
-            throw new ServerErrorHttpException('error');
-        }
-        Yii::$app->response->cookies->add(new Cookie([
-            'name' => 'refresh-token',
-            'value' => $refreshToken,
-            'httpOnly' => true,
-            'sameSite' => 'none',
-            'secure' => true,
-            'path' => '/api/v1/auth/refresh-token'
-        ]));
+//        $refreshToken = Yii::$app->security->generateRandomString(200);
+//        $userToken = $this->saveNewToken($user, $refreshToken, $ip, $userAgent);
+//        if (!$userToken) {
+//            throw new ServerErrorHttpException('error');
+//        }
+//        Yii::$app->response->cookies->add(new Cookie([
+//            'name' => 'refresh-token',
+//            'value' => $refreshToken,
+//            'httpOnly' => true,
+//            'sameSite' => 'none',
+//            'secure' => true,
+//            'path' => '/api/v1/auth/refresh-token'
+//        ]));
+        //TODO: generate and save refresh token
 
     }
 
@@ -55,8 +56,13 @@ final class AuthService
         return Yii::$app->security->validatePassword($password, $hash);
     }
 
+    public function generatePasswordHash($password)
+    {
+        return Yii::$app->security->generatePasswordHash($password);
+    }
+
     private function saveNewToken(
-        User $user,
+        User   $user,
         string $refreshToken,
         string $ip,
         string $user_agent
